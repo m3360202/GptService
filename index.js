@@ -18,11 +18,7 @@ const tokenList = [
   "sk-kyTesnlEcYH2Wk4PpsfRCysuTOMzX",
   "sk-2NXtwfKhQ7PkEHdHavbiU9Iq0KZTwK",
 ];
-// langchain
-const OpenAIlangchain = new ChatOpenAI({
-  openAIApiKey: "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",
-  modelName: "gpt-4",
-});
+
 
 const headers = {
   "Access-Control-Allow-Origin": "*", // change this to match your deployment
@@ -30,17 +26,10 @@ const headers = {
   "Access-Control-Allow-Headers": "Content-Type",
 }
 
-const AzureOpenAIlangchain = new ChatOpenAI({
-  azureOpenAIApiKey: "0a2dcdf910784ba0bf070787646409d7",
-  azureOpenAIApiInstanceName: "boardxai",
-  azureOpenAIApiDeploymentName: "gpt35-16k",
-  azureOpenAIApiVersion: "2023-06-01-preview",
-});
-
 function handlePreflight(request) {
   if (request.headers.get("Origin") !== null &&
-      request.headers.get("Access-Control-Request-Method") !== null &&
-      request.headers.get("Access-Control-Request-Headers") !== null) {
+    request.headers.get("Access-Control-Request-Method") !== null &&
+    request.headers.get("Access-Control-Request-Headers") !== null) {
     // Handle CORS preflight request.
     const headers = {
       "Access-Control-Allow-Origin": "*",
@@ -57,37 +46,37 @@ function handlePreflight(request) {
 addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-    if (event.request.method === "OPTIONS") {
-      // Handle CORS preflight request.
-      event.respondWith(handlePreflight(event.request));
-    } else if (
-      event.request.method === "POST" &&
-      url.pathname === "/handleRequestAIChatGpt35"
-    ) {
-      event.respondWith(handleRequestAIChatGpt35(event.request));
-    } else if (
-      event.request.method === "POST" &&
-      url.pathname === "/handleRequestAIChatGpt4"
-    ) {
-      event.respondWith(handleRequestAIChatGpt4(event.request));
-    } else if (
-      event.request.method === "GET" &&
-      url.pathname === "/handleRequestTest"
-    ) {
-      event.respondWith(handleRequestTest(event.request));
-    } else {
-      // 如果是其他类型请求或者url路径不匹配，返回405 Method Not Allowed
-      event.respondWith(
-        new Response("Invalid request method or path", { status: 405 })
-      );
-    }
- 
+  if (event.request.method === "OPTIONS") {
+    // Handle CORS preflight request.
+    event.respondWith(handlePreflight(event.request));
+  } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIChatGpt35"
+  ) {
+    event.respondWith(handleRequestAIChatGpt35(event.request));
+  } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIChatGpt4"
+  ) {
+    event.respondWith(handleRequestAIChatGpt4(event.request));
+  } else if (
+    event.request.method === "GET" &&
+    url.pathname === "/handleRequestTest"
+  ) {
+    event.respondWith(handleRequestTest(event.request));
+  } else {
+    // 如果是其他类型请求或者url路径不匹配，返回405 Method Not Allowed
+    event.respondWith(
+      new Response("Invalid request method or path", { status: 405 })
+    );
+  }
+
 });
 
 async function handleRequestAIChatGpt35(request) {
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { prompt, messages } = await request.json();
+    const { prompt, messages, key } = await request.json();
 
     let pastMessages = [];
     for (const item of messages) {
@@ -105,6 +94,13 @@ async function handleRequestAIChatGpt35(request) {
     // 初始化内存和链
     const memory = new BufferMemory({
       chatHistory: new ChatMessageHistory(pastMessages),
+    });
+
+    const AzureOpenAIlangchain = new ChatOpenAI({
+      azureOpenAIApiKey: key,
+      azureOpenAIApiInstanceName: "boardxai",
+      azureOpenAIApiDeploymentName: "gpt35-16k",
+      azureOpenAIApiVersion: "2023-06-01-preview",
     });
 
     const chain = new ConversationChain({
@@ -117,9 +113,9 @@ async function handleRequestAIChatGpt35(request) {
       input: prompt,
     });
 
-     //将结果返回给客户端
+    //将结果返回给客户端
 
-    return new Response(JSON.stringify(response), { status: 200,headers:headers });
+    return new Response(JSON.stringify(response), { status: 200, headers: headers });
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
@@ -128,7 +124,7 @@ async function handleRequestAIChatGpt35(request) {
 async function handleRequestAIChatGpt4(request) {
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { prompt, messages } = await request.json();
+    const { prompt, messages, key } = await request.json();
 
     let pastMessages = [];
     for (const item of messages) {
@@ -146,6 +142,12 @@ async function handleRequestAIChatGpt4(request) {
     // 初始化内存和链
     const memory = new BufferMemory({
       chatHistory: new ChatMessageHistory(pastMessages),
+    });
+
+    // langchain
+    const OpenAIlangchain = new ChatOpenAI({
+      openAIApiKey: key,
+      modelName: "gpt-4",
     });
 
     const chain = new ConversationChain({
