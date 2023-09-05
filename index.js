@@ -5,41 +5,39 @@ import { BufferMemory, ChatMessageHistory } from "langchain/memory";
 import { ConversationChain } from "langchain/chains";
 import { Document } from "langchain/document";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { loadQAStuffChain } from "langchain/chains";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { loadQARefineChain } from "langchain/chains";
-import { loadQAMapReduceChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredOutputParser } from "langchain/output_parsers";
-// import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
 const tokenList = [
   "sk-kyTesnlEcYH2Wk4PpsfRCysuTOMzX",
   "sk-2NXtwfKhQ7PkEHdHavbiU9Iq0KZTwK",
 ];
 
-
 const headers = {
   "Access-Control-Allow-Origin": "*", // change this to match your deployment
   "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
-}
+};
 
 function handlePreflight(request) {
-  if (request.headers.get("Origin") !== null &&
+  if (
+    request.headers.get("Origin") !== null &&
     request.headers.get("Access-Control-Request-Method") !== null &&
-    request.headers.get("Access-Control-Request-Headers") !== null) {
+    request.headers.get("Access-Control-Request-Headers") !== null
+  ) {
     // Handle CORS preflight request.
     const headers = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
       "Access-Control-Allow-Headers": "*",
-    }
+    };
     return new Response(null, { headers });
   } else {
     // Handle standard OPTIONS request.
-    return new Response(null, { headers: { "Allow": "POST,OPTIONS" } });
+    return new Response(null, { headers: { Allow: "POST,OPTIONS" } });
   }
 }
 
@@ -60,6 +58,16 @@ addEventListener("fetch", (event) => {
   ) {
     event.respondWith(handleRequestAIChatGpt4(event.request));
   } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIWidgetConvergeGpt35"
+  ) {
+    event.respondWith(handleRequestAIWidgetConvergeGpt35(event.request));
+  } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIWidgetConvergeGpt4"
+  ) {
+    event.respondWith(handleRequestAIWidgetConvergeGpt4(event.request));
+  } else if (
     event.request.method === "GET" &&
     url.pathname === "/handleRequestTest"
   ) {
@@ -70,7 +78,6 @@ addEventListener("fetch", (event) => {
       new Response("Invalid request method or path", { status: 405 })
     );
   }
-
 });
 
 async function handleRequestAIChatGpt35(request) {
@@ -115,7 +122,10 @@ async function handleRequestAIChatGpt35(request) {
 
     //将结果返回给客户端
 
-    return new Response(JSON.stringify(response), { status: 200, headers: headers });
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: headers,
+    });
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
@@ -161,11 +171,217 @@ async function handleRequestAIChatGpt4(request) {
     });
 
     //将结果返回给客户端
-    return new Response(JSON.stringify(response), { status: 200 });
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: headers,
+    });
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
 }
+
+async function handleRequestAIWidgetConvergeGpt35(request) {
+  try {
+    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
+    const { commandData, currentWidgetsTextContent, key } =
+      await request.json();
+
+    const AzureOpenAIlangchain = new ChatOpenAI({
+      azureOpenAIApiKey: key,
+      azureOpenAIApiInstanceName: "boardxai",
+      azureOpenAIApiDeploymentName: "gpt35-16k",
+      azureOpenAIApiVersion: "2023-06-01-preview",
+      temperature: commandData.temperature
+        ? Number(commandData.temperature)
+        : 0.8,
+      maxTokens:
+        commandData.maximumLength && Number(commandData.maximumLength) > 2048
+          ? 2048
+          : Number(commandData.maximumLength),
+      topP: commandData.topP ? Number(commandData.topP) : 1,
+      frequencyPenalty: commandData.frequencyPenalty
+        ? Number(commandData.frequencyPenalty)
+        : 0,
+      presencePenalty: commandData.presencePenalty
+        ? Number(commandData.presencePenalty)
+        : 0,
+    });
+
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 4000,
+      chunkOverlap: 600,
+    });
+
+    const docOutput = await splitter.splitDocuments([
+      new Document({ pageContent: currentWidgetsTextContent }),
+    ]);
+
+    const refineEmbeddingsModelAzureOpenAI = {
+      azureOpenAIApiKey: key,
+      azureOpenAIApiInstanceName: "boardxai",
+      azureOpenAIApiDeploymentName: "boardx-text-embedding-ada",
+      azureOpenAIApiVersion: "2023-06-01-preview",
+      batchSize: 2048,
+      maxRetries: 10,
+      maxConcurrency: 10,
+    };
+
+    const result = await langchainRefineProcessingText(
+      refineEmbeddingsModelAzureOpenAI,
+      AzureOpenAIlangchain,
+      docOutput,
+      commandData
+    );
+
+    //将结果返回给客户端
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(`Error: ${error}`, { status: 500 });
+  }
+}
+
+async function handleRequestAIWidgetConvergeGpt4(request) {
+  try {
+    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
+    const { commandData, currentWidgetsTextContent, key } =
+      await request.json();
+
+    const OpenAIlangchain = new ChatOpenAI({
+      openAIApiKey: key,    
+      modelName: "gpt-4",
+      temperature: commandData.temperature
+        ? Number(commandData.temperature)
+        : 0.8,
+      maxTokens:
+        commandData.maximumLength && Number(commandData.maximumLength) > 2048
+          ? 2048
+          : Number(commandData.maximumLength),
+      topP: commandData.topP ? Number(commandData.topP) : 1,
+      frequencyPenalty: commandData.frequencyPenalty
+        ? Number(commandData.frequencyPenalty)
+        : 0,
+      presencePenalty: commandData.presencePenalty
+        ? Number(commandData.presencePenalty)
+        : 0,
+    });
+
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 4000,
+      chunkOverlap: 600,
+    });
+
+    const docOutput = await splitter.splitDocuments([
+      new Document({ pageContent: currentWidgetsTextContent }),
+    ]);
+
+    const refineEmbeddingsModelOpenAI = {
+      openAIApiKey: key,
+      batchSize: 2048,
+      modelName: "text-embedding-ada-002",
+      maxRetries: 10,
+      maxConcurrency: 10,
+      // verbose: true
+    };
+
+    const result = await langchainRefineProcessingText(
+      refineEmbeddingsModelOpenAI,
+      OpenAIlangchain,
+      docOutput,
+      commandData
+    );
+
+    //将结果返回给客户端
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(`Error: ${error}`, { status: 500 });
+  }
+}
+
+// 创建 Prompt Template
+const getDefinePromptTemplate = (commandData) => {
+  if (
+    commandData.bindingTemplates &&
+    commandData.templateId &&
+    commandData.templateId.length > 0 &&
+    commandData.customizedContentOutputFormat &&
+    commandData.customizedContentOutputFormat.length > 0
+  ) {
+    let parserObj = {};
+
+    for (var i = 0; i < commandData.customizedContentOutputFormat.length; i++) {
+      let item = commandData.customizedContentOutputFormat[i];
+      // parserObj[item.title] = z.array(z.string()).describe(item.description);
+      parserObj[item.title] = z.array(z.string()).describe("");
+    }
+
+    const parser = StructuredOutputParser.fromZodSchema(z.object(parserObj));
+
+    const formatInstructions = parser.getFormatInstructions();
+
+    const questionPromptTemplate = new PromptTemplate({
+      template: "\n{format_instructions}\n{question}",
+      inputVariables: ["question"],
+      partialVariables: { format_instructions: formatInstructions },
+    });
+
+    return { parser, questionPromptTemplate };
+  } else {
+    const questionPromptTemplate = new PromptTemplate({
+      template: "{question}",
+      inputVariables: ["question"],
+    });
+
+    return { parser: null, questionPromptTemplate: questionPromptTemplate };
+  }
+};
+
+// 处理文本
+const langchainRefineProcessingText = async (
+  refineEmbeddingsModel,
+  llms,
+  docsContent,
+  commandData
+) => {
+  const { parser, questionPromptTemplate } =
+    getDefinePromptTemplate(commandData);
+
+  const embeddings = new OpenAIEmbeddings(refineEmbeddingsModel);
+
+  const chain = loadQARefineChain(llms, {
+    questionPrompt: questionPromptTemplate,
+  });
+
+  const store = await MemoryVectorStore.fromDocuments(docsContent, embeddings);
+
+  const question = commandData.command;
+
+  // Select the relevant documents
+  const relevantDocs = await store.similaritySearch(question);
+
+  // Call the chain
+  const result = await chain.call({
+    input_documents: relevantDocs,
+    question,
+  });
+
+  if (parser) {
+    return {
+      content: await parser.parse(result.output_text),
+      totalTokens: 0,
+    };
+  } else {
+    return {
+      content: result.output_text,
+      totalTokens: 0,
+    };
+  }
+};
 
 async function handleRequestTest(request) {
   try {
