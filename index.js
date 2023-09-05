@@ -12,7 +12,7 @@ import { loadQARefineChain } from "langchain/chains";
 import { loadQAMapReduceChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredOutputParser } from "langchain/output_parsers";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+// import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
 const tokenList = [
   "sk-kyTesnlEcYH2Wk4PpsfRCysuTOMzX",
@@ -46,11 +46,6 @@ addEventListener("fetch", (event) => {
       url.pathname === "/handleRequestAIChatGpt4"
     ) {
       event.respondWith(handleRequestAIChatGpt4(event.request));
-    } else if (
-      event.request.method === "POST" &&
-      url.pathname === "/handleParsePDFFileContent"
-    ) {
-      event.respondWith(handleParsePDFFileContent(event.request));
     } else if (
       event.request.method === "GET" &&
       url.pathname === "/handleRequestTest"
@@ -147,21 +142,21 @@ async function handleRequestAIChatGpt4(request) {
   }
 }
 
-async function handleParsePDFFileContent(request) {
-  try {
-    const { tempFilePath } = await request.json();
+// async function handleParsePDFFileContent(request) {
+//   try {
+//     const { tempFilePath } = await request.json();
 
-    const loader = new PDFLoader(tempFilePath, {
-      splitPages: false,
-    });
+//     const loader = new PDFLoader(tempFilePath, {
+//       splitPages: false,
+//     });
 
-    const docs = await loader.load();
+//     const docs = await loader.load();
 
-    return new Response(JSON.stringify(docs), { status: 200 });
-  } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500 });
-  }
-}
+//     return new Response(JSON.stringify(docs), { status: 200 });
+//   } catch (error) {
+//     return new Response(`Error: ${error}`, { status: 500 });
+//   }
+// }
 
 async function handleRequestTest(request) {
   try {
