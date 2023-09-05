@@ -10,6 +10,7 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { loadQARefineChain } from "langchain/chains";
 import { PromptTemplate } from "langchain/prompts";
 import { StructuredOutputParser } from "langchain/output_parsers";
+import OpenAI from "openai";
 
 const tokenList = [
   "sk-kyTesnlEcYH2Wk4PpsfRCysuTOMzX",
@@ -84,6 +85,39 @@ async function handleRequestAIChatGpt35(request) {
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
     const { prompt, messages, key } = await request.json();
+
+
+    const openai = new OpenAI({
+      apiKey: key,
+    });
+
+    // make our request to the OpenAI API
+    const stream = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: messages,
+      stream: true,
+    });
+
+    // Using our readable and writable to handle streaming data
+    let { readable, writable } = new TransformStream();
+
+    let writer = writable.getWriter();
+    const textEncoder = new TextEncoder();
+
+    // loop over the data as it is streamed from OpenAI and write it using our writeable
+    for await (const part of stream) {
+      console.log(part.choices[0]?.delta?.content || "");
+      writer.write(textEncoder.encode(part.choices[0]?.delta?.content || ""));
+    }
+
+    writer.close();
+
+    // Send readable back to the browser so it can read the stream content
+    return new Response(readable, {
+      status: 200,
+      headers: headers,
+    });
+
 
     let pastMessages = [];
     for (const item of messages) {

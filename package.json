@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/m3360202/avaService#readme",
   "dependencies": {
-    "langchain": "^0.0.139"
+    "langchain": "^0.0.139",
+    "openai": "^4.4.0"
   },
   "devDependencies": {
     "webpack": "^5.88.2",
