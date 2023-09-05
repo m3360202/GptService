@@ -24,6 +24,12 @@ const OpenAIlangchain = new ChatOpenAI({
   modelName: "gpt-4",
 });
 
+const headers = {
+  "Access-Control-Allow-Origin": "*", // change this to match your deployment
+  "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+}
+
 const AzureOpenAIlangchain = new ChatOpenAI({
   azureOpenAIApiKey: "0a2dcdf910784ba0bf070787646409d7",
   azureOpenAIApiInstanceName: "boardxai",
@@ -31,12 +37,30 @@ const AzureOpenAIlangchain = new ChatOpenAI({
   azureOpenAIApiVersion: "2023-06-01-preview",
 });
 
+function handlePreflight(request) {
+  if (request.headers.get("Origin") !== null &&
+      request.headers.get("Access-Control-Request-Method") !== null &&
+      request.headers.get("Access-Control-Request-Headers") !== null) {
+    // Handle CORS preflight request.
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "*",
+    }
+    return new Response(null, { headers });
+  } else {
+    // Handle standard OPTIONS request.
+    return new Response(null, { headers: { "Allow": "POST,OPTIONS" } });
+  }
+}
+
 addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-  //判断tokens是否等于tokenList中的某一个
-  const { tokens } = event.request.json();
-  if (tokens !== null && tokenList.includes(tokens)) {
-    if (
+
+    if (event.request.method === "OPTIONS") {
+      // Handle CORS preflight request.
+      event.respondWith(handlePreflight(event.request));
+    } else if (
       event.request.method === "POST" &&
       url.pathname === "/handleRequestAIChatGpt35"
     ) {
@@ -57,9 +81,7 @@ addEventListener("fetch", (event) => {
         new Response("Invalid request method or path", { status: 405 })
       );
     }
-  } else {
-    event.respondWith(new Response("Invalid token", { status: 403 }));
-  }
+ 
 });
 
 async function handleRequestAIChatGpt35(request) {
@@ -95,8 +117,9 @@ async function handleRequestAIChatGpt35(request) {
       input: prompt,
     });
 
-    //将结果返回给客户端
-    return new Response(JSON.stringify(response), { status: 200 });
+     //将结果返回给客户端
+
+    return new Response(JSON.stringify(response), { status: 200,headers:headers });
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
@@ -141,22 +164,6 @@ async function handleRequestAIChatGpt4(request) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
 }
-
-// async function handleParsePDFFileContent(request) {
-//   try {
-//     const { tempFilePath } = await request.json();
-
-//     const loader = new PDFLoader(tempFilePath, {
-//       splitPages: false,
-//     });
-
-//     const docs = await loader.load();
-
-//     return new Response(JSON.stringify(docs), { status: 200 });
-//   } catch (error) {
-//     return new Response(`Error: ${error}`, { status: 500 });
-//   }
-// }
 
 async function handleRequestTest(request) {
   try {
