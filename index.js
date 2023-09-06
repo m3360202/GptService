@@ -54,20 +54,10 @@ addEventListener("fetch", (event) => {
   ) {
     event.respondWith(handleRequestAIChatGpt35(event.request));
   } else if (
-    event.request.method === "POST" &&
-    url.pathname === "/handleRequestAIChatGpt5"
-  ) {
-    event.respondWith(handleRequestAIChatGpt5(event.request));
-  } else if (
-    event.request.method === "POST" &&
+    event.request.method === "GET" &&
     url.pathname === "/handleRequestAIChatGpt4"
   ) {
     event.respondWith(handleRequestAIChatGpt4(event.request));
-  } else if (
-    event.request.method === "POST" &&
-    url.pathname === "/handleRequestAIChatGpt40"
-  ) {
-    event.respondWith(handleRequestAIChatGpt40(event.request));
   } else if (
     event.request.method === "POST" &&
     url.pathname === "/handleRequestAIWidgetConvergeGpt35"
@@ -78,6 +68,16 @@ addEventListener("fetch", (event) => {
     url.pathname === "/handleRequestAIWidgetConvergeGpt4"
   ) {
     event.respondWith(handleRequestAIWidgetConvergeGpt4(event.request));
+  } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIChatGpt5"
+  ) {
+    event.respondWith(handleRequestAIChatGpt5(event.request));
+  } else if (
+    event.request.method === "POST" &&
+    url.pathname === "/handleRequestAIChatGpt40"
+  ) {
+    event.respondWith(handleRequestAIChatGpt40(event.request));
   } else if (
     event.request.method === "GET" &&
     url.pathname === "/handleRequestTest"
@@ -91,16 +91,37 @@ addEventListener("fetch", (event) => {
   }
 });
 
-async function handleRequestAIChatGpt35(request) {
-  
+async function handleRequestAIChatGpt35(request) { 
   try {
-    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const prompt = '';
-    const messages = [];
-    const key ='';
+    console.warn("request-1", request);
+    console.warn("request-2", request.url);
+    const url = new URL(request.url);
+
+    const params = new URLSearchParams(url.search);
+
+    const promptValue = params.get("prompt");
+    const messageValue = params.get("messages");
+
+    console.log("prompt:", promptValue);
+
+    console.log("messages:", messageValue);
+
+    const key = azureApiKey;
+
+    // LLM
+    const AzureOpenAIlangchain = new ChatOpenAI({
+      azureOpenAIApiKey: key,
+      azureOpenAIApiInstanceName: "boardxai",
+      azureOpenAIApiDeploymentName: "gpt35-16k",
+      azureOpenAIApiVersion: "2023-06-01-preview",
+      streaming: true,
+    });
+
     const { readable, writable } = new TransformStream();
+
     let pastMessages = [];
-    for (const item of messages) {
+
+    for (const item of messageValue) {
       if (item.role === "system") {
         pastMessages.push(new SystemMessage(item.content));
       }
@@ -115,15 +136,6 @@ async function handleRequestAIChatGpt35(request) {
     // 初始化内存和链
     const memory = new BufferMemory({
       chatHistory: new ChatMessageHistory(pastMessages),
-    });
-
-    // langchain
-    const AzureOpenAIlangchain = new ChatOpenAI({
-      azureOpenAIApiKey: key,
-      azureOpenAIApiInstanceName: "boardxai",
-      azureOpenAIApiDeploymentName: "gpt35-16k",
-      azureOpenAIApiVersion: "2023-06-01-preview",
-      streaming: true,
     });
 
     const chain = new ConversationChain({
@@ -132,149 +144,75 @@ async function handleRequestAIChatGpt35(request) {
     });
 
     const writer = writable.getWriter();
+
     const textEncoder = new TextEncoder();
     // 调用链并获取响应
-    chain.call({
-      input: prompt,
-      callbacks: [
-        {
-          handleLLMNewToken(token) {
-            console.log({ token });
-            writer.write(textEncoder.encode(token)); 
+    chain
+      .call({
+        input: promptValue,
+        callbacks: [
+          {
+            handleLLMNewToken(token) {
+              console.log({ token });
+              writer.write(textEncoder.encode(token));
+            },
           },
-        },
-      ],
-    }).then(() => {
+        ],
+      })
+      .then(() => {
         // 处理完成后，关闭流
         writer.close();
-    }).catch(e => {
+      })
+      .catch((e) => {
         // 处理错误
         console.error(e);
         writer.abort(e);
         throw e;
+      });
+
+    return new Response(readable, {
+      status: 200,
+      headers: {
+        ...headers,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
     });
-
-
-    return new Response(readable, { status: 200,headers:{...headers,'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive'}});
-
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500,headers: headers });
   }
 }
 
-async function handleRequestAIChatGpt5(request) {
+async function handleRequestAIChatGpt4(request) {
   try {
-    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { prompt, messages, key } = await request.json();
+    console.warn("request-1", request);
+    console.warn("request-2", request.url);
+    const url = new URL(request.url);
 
-    let pastMessages = [];
-    for (const item of messages) {
-      if (item.role === "system") {
-        pastMessages.push(new SystemMessage(item.content));
-      }
-      if (item.role === "user") {
-        pastMessages.push(new HumanMessage(item.content));
-      }
-      if (item.role === "assistant") {
-        pastMessages.push(new AIMessage(item.content));
-      }
-    }
+    const params = new URLSearchParams(url.search);
 
-    const AzureOpenAIlangchain = new ChatOpenAI({
-      azureOpenAIApiKey: key,
-      azureOpenAIApiInstanceName: "boardxai",
-      azureOpenAIApiDeploymentName: "gpt35-16k",
-      azureOpenAIApiVersion: "2023-06-01-preview",
+    const promptValue = params.get("prompt");
+    const messageValue = params.get("messages");
+
+    console.log("prompt:", promptValue);
+
+    console.log("messages:", messageValue);
+
+    const key = apiKeyTest;
+
+    // LLM
+    const OpenAIlangchain = new ChatOpenAI({
+      openAIApiKey: key,
+      modelName: "gpt-4",
       streaming: true,
     });
 
-    const memory = new BufferMemory({
-      chatHistory: new ChatMessageHistory(pastMessages),
-    });
-
-    let { readable, writable } = new TransformStream();
-
-    let writer = writable.getWriter();
-
-    const textEncoder = new TextEncoder();
-
-    const chain = new ConversationChain({
-      llm: AzureOpenAIlangchain,
-      memory: memory,
-    });
-
-    // 调用链并获取响应
-    const response = await chain.call({
-      input: prompt,
-      callbacks: [
-        {
-          handleLLMNewToken(tokens) {
-            console.warn("tokens", tokens);
-            writer.write(textEncoder.encode(tokens));
-          },
-        },
-      ],
-    });
-
-    writer.close();
-
-    return new Response(readable, {
-      status: 200,
-      headers: headers,
-    });
-  } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500 });
-  }
-}
-
-async function handleRequestAIChatGpt40(request) {
-  try {
-    const { prompt, messages, key } = await request.json();
-
-    const openai = new OpenAI({
-      apiKey: key,
-    });
-
-    // make our request to the OpenAI API
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: messages,
-      stream: true,
-    });
-
-    // Using our readable and writable to handle streaming data
-    let { readable, writable } = new TransformStream();
-
-    let writer = writable.getWriter();
-    const textEncoder = new TextEncoder();
-
-    // loop over the data as it is streamed from OpenAI and write it using our writeable
-    for await (const part of stream) {
-      console.log(part.choices[0]?.delta?.content || "");
-      writer.write(textEncoder.encode(part.choices[0]?.delta?.content || ""));
-    }
-
-    writer.close();
-
-    // Send readable back to the browser so it can read the stream content
-    return new Response(readable, {
-      status: 200,
-      headers: headers,
-    });
-  } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500 });
-  }
-}
-
-async function handleRequestAIChatGpt4(request) {
-  try {
-    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { prompt, messages, key } = await request.json();
+    const { readable, writable } = new TransformStream();
 
     let pastMessages = [];
-    for (const item of messages) {
+
+    for (const item of messageValue) {
       if (item.role === "system") {
         pastMessages.push(new SystemMessage(item.content));
       }
@@ -291,29 +229,49 @@ async function handleRequestAIChatGpt4(request) {
       chatHistory: new ChatMessageHistory(pastMessages),
     });
 
-    // langchain
-    const OpenAIlangchain = new ChatOpenAI({
-      openAIApiKey: key,
-      modelName: "gpt-4",
-    });
-
     const chain = new ConversationChain({
       llm: OpenAIlangchain,
       memory: memory,
     });
 
-    // 调用链并获取响应
-    const response = await chain.call({
-      input: prompt,
-    });
+    const writer = writable.getWriter();
 
-    //将结果返回给客户端
-    return new Response(JSON.stringify(response), {
+    const textEncoder = new TextEncoder();
+    // 调用链并获取响应
+    chain
+      .call({
+        input: promptValue,
+        callbacks: [
+          {
+            handleLLMNewToken(token) {
+              console.log({ token });
+              writer.write(textEncoder.encode(token));
+            },
+          },
+        ],
+      })
+      .then(() => {
+        // 处理完成后，关闭流
+        writer.close();
+      })
+      .catch((e) => {
+        // 处理错误
+        console.error(e);
+        writer.abort(e);
+        throw e;
+      });
+
+    return new Response(readable, {
       status: 200,
-      headers: headers,
+      headers: {
+        ...headers,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500 });
+    return new Response(`Error: ${error}`, { status: 500, headers: headers });
   }
 }
 
@@ -519,6 +477,112 @@ const langchainRefineProcessingText = async (
     };
   }
 };
+
+
+// test chat ai
+async function handleRequestAIChatGpt5(request) {
+  try {
+    // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
+    const { prompt, messages, key } = await request.json();
+
+    let pastMessages = [];
+    for (const item of messages) {
+      if (item.role === "system") {
+        pastMessages.push(new SystemMessage(item.content));
+      }
+      if (item.role === "user") {
+        pastMessages.push(new HumanMessage(item.content));
+      }
+      if (item.role === "assistant") {
+        pastMessages.push(new AIMessage(item.content));
+      }
+    }
+
+    const AzureOpenAIlangchain = new ChatOpenAI({
+      azureOpenAIApiKey: key,
+      azureOpenAIApiInstanceName: "boardxai",
+      azureOpenAIApiDeploymentName: "gpt35-16k",
+      azureOpenAIApiVersion: "2023-06-01-preview",
+      streaming: true,
+    });
+
+    const memory = new BufferMemory({
+      chatHistory: new ChatMessageHistory(pastMessages),
+    });
+
+    let { readable, writable } = new TransformStream();
+
+    let writer = writable.getWriter();
+
+    const textEncoder = new TextEncoder();
+
+    const chain = new ConversationChain({
+      llm: AzureOpenAIlangchain,
+      memory: memory,
+    });
+
+    // 调用链并获取响应
+    const response = await chain.call({
+      input: prompt,
+      callbacks: [
+        {
+          handleLLMNewToken(tokens) {
+            console.warn("tokens", tokens);
+            writer.write(textEncoder.encode(tokens));
+          },
+        },
+      ],
+    });
+
+    writer.close();
+
+    return new Response(readable, {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(`Error: ${error}`, { status: 500 });
+  }
+}
+
+async function handleRequestAIChatGpt40(request) {
+  try {
+    const { prompt, messages, key } = await request.json();
+
+    const openai = new OpenAI({
+      apiKey: key,
+    });
+
+    // make our request to the OpenAI API
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: messages,
+      stream: true,
+    });
+
+    // Using our readable and writable to handle streaming data
+    let { readable, writable } = new TransformStream();
+
+    let writer = writable.getWriter();
+    const textEncoder = new TextEncoder();
+
+    // loop over the data as it is streamed from OpenAI and write it using our writeable
+    for await (const part of stream) {
+      console.log(part.choices[0]?.delta?.content || "");
+      writer.write(textEncoder.encode(part.choices[0]?.delta?.content || ""));
+    }
+
+    writer.close();
+
+    // Send readable back to the browser so it can read the stream content
+    return new Response(readable, {
+      status: 200,
+      headers: headers,
+    });
+  } catch (error) {
+    return new Response(`Error: ${error}`, { status: 500 });
+  }
+}
 
 async function handleRequestTest(request) {
   try {
