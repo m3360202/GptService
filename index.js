@@ -49,7 +49,7 @@ addEventListener("fetch", (event) => {
     // Handle CORS preflight request.
     event.respondWith(handlePreflight(event.request));
   } else if (
-    event.request.method === "POST" &&
+    event.request.method === "GET" &&
     url.pathname === "/handleRequestAIChatGpt35"
   ) {
     event.respondWith(handleRequestAIChatGpt35(event.request));
@@ -95,7 +95,9 @@ async function handleRequestAIChatGpt35(request) {
   
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { prompt, messages, key } = await request.json();
+    const prompt = '核废水的危害是什么';
+    const messages = [];
+    const key ='0a2dcdf910784ba0bf070787646409d7';
     const { readable, writable } = new TransformStream();
     let pastMessages = [];
     for (const item of messages) {
@@ -129,19 +131,30 @@ async function handleRequestAIChatGpt35(request) {
       memory: memory,
     });
 
+    const writer = writable.getWriter();
+
     // 调用链并获取响应
     chain.call({
       input: prompt,
-    },
-    {
       callbacks: [
         {
           handleLLMNewToken(token) {
             console.log({ token });
-            writable.getWriter().write(`data: ${JSON.stringify(token)}\n\n`);
+            if(token){
+              writable.getWriter().write(`data: ${JSON.stringify(token)}\n\n`);
+            }
+            
           },
         },
       ],
+    }).then(() => {
+        // 处理完成后，关闭流
+        writer.close();
+    }).catch(e => {
+        // 处理错误
+        console.error(e);
+        writer.abort(e);
+        throw e;
     });
 
 
