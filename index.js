@@ -19,7 +19,7 @@ const tokenList = [
 
 const headers = {
   "Access-Control-Allow-Origin": "*", // change this to match your deployment
-  "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+  "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS,FETCH",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
@@ -92,10 +92,11 @@ addEventListener("fetch", (event) => {
 });
 
 async function handleRequestAIChatGpt35(request) {
+  
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
     const { prompt, messages, key } = await request.json();
-
+    const { readable, writable } = new TransformStream();
     let pastMessages = [];
     for (const item of messages) {
       if (item.role === "system") {
@@ -120,6 +121,7 @@ async function handleRequestAIChatGpt35(request) {
       azureOpenAIApiInstanceName: "boardxai",
       azureOpenAIApiDeploymentName: "gpt35-16k",
       azureOpenAIApiVersion: "2023-06-01-preview",
+      streaming: true,
     });
 
     const chain = new ConversationChain({
@@ -128,14 +130,27 @@ async function handleRequestAIChatGpt35(request) {
     });
 
     // 调用链并获取响应
-    const response = await chain.call({
+    chain.call({
       input: prompt,
+    },
+    {
+      callbacks: [
+        {
+          handleLLMNewToken(token) {
+            console.log({ token });
+            writable.getWriter().write(`data: ${JSON.stringify(token)}\n\n`);
+          },
+        },
+      ],
     });
 
-    //将结果返回给客户端
-    return new Response(JSON.stringify(response), { status: 200 });
+
+    return new Response(readable, { status: 200,headers:{...headers,'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'}});
+
   } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500 });
+    return new Response(`Error: ${error}`, { status: 500,headers: headers });
   }
 }
 
