@@ -95,9 +95,9 @@ async function handleRequestAIChatGpt35(request) {
   
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const prompt = '核废水的危害是什么';
+    const prompt = '';
     const messages = [];
-    const key ='0a2dcdf910784ba0bf070787646409d7';
+    const key ='';
     const { readable, writable } = new TransformStream();
     let pastMessages = [];
     for (const item of messages) {
@@ -132,7 +132,7 @@ async function handleRequestAIChatGpt35(request) {
     });
 
     const writer = writable.getWriter();
-
+    const textEncoder = new TextEncoder();
     // 调用链并获取响应
     chain.call({
       input: prompt,
@@ -140,10 +140,7 @@ async function handleRequestAIChatGpt35(request) {
         {
           handleLLMNewToken(token) {
             console.log({ token });
-            if(token){
-              writable.getWriter().write(`data: ${JSON.stringify(token)}\n\n`);
-            }
-            
+            writer.write(textEncoder.encode(token)); 
           },
         },
       ],
