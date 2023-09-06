@@ -133,10 +133,7 @@ async function handleRequestAIChatGpt35(request) {
     });
 
     //将结果返回给客户端
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers: headers,
-    });
+    return new Response(JSON.stringify(response), { status: 200 });
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
@@ -165,7 +162,11 @@ async function handleRequestAIChatGpt5(request) {
       azureOpenAIApiInstanceName: "boardxai",
       azureOpenAIApiDeploymentName: "gpt35-16k",
       azureOpenAIApiVersion: "2023-06-01-preview",
-      streaming: true
+      streaming: true,
+    });
+
+    const memory = new BufferMemory({
+      chatHistory: new ChatMessageHistory(pastMessages),
     });
 
     let { readable, writable } = new TransformStream();
@@ -237,7 +238,6 @@ async function handleRequestAIChatGpt40(request) {
       status: 200,
       headers: headers,
     });
-
   } catch (error) {
     return new Response(`Error: ${error}`, { status: 500 });
   }
@@ -362,7 +362,7 @@ async function handleRequestAIWidgetConvergeGpt4(request) {
       await request.json();
 
     const OpenAIlangchain = new ChatOpenAI({
-      openAIApiKey: key,    
+      openAIApiKey: key,
       modelName: "gpt-4",
       temperature: commandData.temperature
         ? Number(commandData.temperature)
