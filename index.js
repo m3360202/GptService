@@ -109,7 +109,14 @@ async function handleRequestAIChatGpt35(request) {
       azureOpenAIApiInstanceName: "boardxai",
       azureOpenAIApiDeploymentName: "gpt35-16k",
       azureOpenAIApiVersion: "2023-06-01-preview",
+      streaming: true
     });
+
+    let { readable, writable } = new TransformStream();
+
+    let writer = writable.getWriter();
+
+    const textEncoder = new TextEncoder();
 
     const chain = new ConversationChain({
       llm: AzureOpenAIlangchain,
@@ -119,11 +126,21 @@ async function handleRequestAIChatGpt35(request) {
     // 调用链并获取响应
     const response = await chain.call({
       input: prompt,
+      callbacks: [
+        {
+          handleLLMNewToken(tokens) {
+            writer.write(textEncoder.encode(tokens));
+          },
+        },
+      ],
     });
+
+    writer.close();
+
 
     //将结果返回给客户端
 
-    return new Response(JSON.stringify(response), {
+    return new Response(readable, {
       status: 200,
       headers: headers,
     });
