@@ -91,13 +91,11 @@ addEventListener("fetch", (event) => {
   }
 });
 
-async function handleRequestAIChatGpt35(request) { 
+async function handleRequestAIChatGpt35(request) {
   try {
-    console.warn("request-1", request);
-    console.warn("request-2", request.url);
     const requestData = await request.json(); // 解析请求的 JSON 数据
     const promptValue = requestData.prompt;
-    const messageValue  = requestData.messages;
+    const messageValue = requestData.messages;
 
     console.log("prompt:", promptValue);
 
@@ -177,17 +175,15 @@ async function handleRequestAIChatGpt35(request) {
       },
     });
   } catch (error) {
-    return new Response(`Error: ${error}`, { status: 500,headers: headers });
+    return new Response(`Error: ${error}`, { status: 500, headers: headers });
   }
 }
 
 async function handleRequestAIChatGpt4(request) {
   try {
-
-
     const requestData = await request.json(); // 解析请求的 JSON 数据
     const promptValue = requestData.prompt;
-    const messageValue  = requestData.messages;
+    const messageValue = requestData.messages;
 
     console.log("prompt:", promptValue);
 
@@ -272,8 +268,12 @@ async function handleRequestAIChatGpt4(request) {
 async function handleRequestAIWidgetConvergeGpt35(request) {
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { commandData, currentWidgetsTextContent, key } =
-      await request.json();
+    const { commandData, currentWidgetsTextContent } = await request.json();
+
+    console.warn("commandData", commandData);
+    console.warn("currentWidgetsTextContent", currentWidgetsTextContent);
+
+    const key = azureApiKey;
 
     const AzureOpenAIlangchain = new ChatOpenAI({
       azureOpenAIApiKey: key,
@@ -305,6 +305,8 @@ async function handleRequestAIWidgetConvergeGpt35(request) {
       new Document({ pageContent: currentWidgetsTextContent }),
     ]);
 
+    console.log("docOutput", docOutput);
+
     const refineEmbeddingsModelAzureOpenAI = {
       azureOpenAIApiKey: key,
       azureOpenAIApiInstanceName: "boardxai",
@@ -322,6 +324,8 @@ async function handleRequestAIWidgetConvergeGpt35(request) {
       commandData
     );
 
+    console.warn("result", result);
+
     //将结果返回给客户端
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -335,8 +339,12 @@ async function handleRequestAIWidgetConvergeGpt35(request) {
 async function handleRequestAIWidgetConvergeGpt4(request) {
   try {
     // 解析获取传入的信息。假设信息是JSON格式并用POST方法发送
-    const { commandData, currentWidgetsTextContent, key } =
-      await request.json();
+    const { commandData, currentWidgetsTextContent } = await request.json();
+
+    console.warn("commandData", commandData);
+    console.warn("currentWidgetsTextContent", currentWidgetsTextContent);
+
+    const key = apiKeyTest;
 
     const OpenAIlangchain = new ChatOpenAI({
       openAIApiKey: key,
@@ -366,13 +374,14 @@ async function handleRequestAIWidgetConvergeGpt4(request) {
       new Document({ pageContent: currentWidgetsTextContent }),
     ]);
 
+    console.warn("docOutput", docOutput);
+
     const refineEmbeddingsModelOpenAI = {
       openAIApiKey: key,
       batchSize: 2048,
       modelName: "text-embedding-ada-002",
       maxRetries: 10,
       maxConcurrency: 10,
-      // verbose: true
     };
 
     const result = await langchainRefineProcessingText(
@@ -381,6 +390,8 @@ async function handleRequestAIWidgetConvergeGpt4(request) {
       docOutput,
       commandData
     );
+
+    console.warn("result", result);
 
     //将结果返回给客户端
     return new Response(JSON.stringify(result), {
@@ -421,12 +432,8 @@ const getDefinePromptTemplate = (commandData) => {
 
     return { parser, questionPromptTemplate };
   } else {
-    const questionPromptTemplate = new PromptTemplate({
-      template: "{question}",
-      inputVariables: ["question"],
-    });
 
-    return { parser: null, questionPromptTemplate: questionPromptTemplate };
+    return { parser: null, questionPromptTemplate: null };
   }
 };
 
@@ -442,9 +449,13 @@ const langchainRefineProcessingText = async (
 
   const embeddings = new OpenAIEmbeddings(refineEmbeddingsModel);
 
-  const chain = loadQARefineChain(llms, {
-    questionPrompt: questionPromptTemplate,
-  });
+  let chain = loadQARefineChain(llms);
+
+  if (questionPromptTemplate) {
+    chain = loadQARefineChain(llms, {
+      questionPrompt: questionPromptTemplate,
+    });
+  }
 
   const store = await MemoryVectorStore.fromDocuments(docsContent, embeddings);
 
@@ -471,7 +482,6 @@ const langchainRefineProcessingText = async (
     };
   }
 };
-
 
 // test chat ai
 async function handleRequestAIChatGpt5(request) {
