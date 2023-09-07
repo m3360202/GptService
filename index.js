@@ -54,7 +54,7 @@ addEventListener("fetch", (event) => {
   ) {
     event.respondWith(handleRequestAIChatGpt35(event.request));
   } else if (
-    event.request.method === "GET" &&
+    event.request.method === "POST" &&
     url.pathname === "/handleRequestAIChatGpt4"
   ) {
     event.respondWith(handleRequestAIChatGpt4(event.request));
