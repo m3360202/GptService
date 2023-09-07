@@ -49,7 +49,7 @@ addEventListener("fetch", (event) => {
     // Handle CORS preflight request.
     event.respondWith(handlePreflight(event.request));
   } else if (
-    event.request.method === "GET" &&
+    event.request.method === "POST" &&
     url.pathname === "/handleRequestAIChatGpt35"
   ) {
     event.respondWith(handleRequestAIChatGpt35(event.request));
@@ -95,12 +95,9 @@ async function handleRequestAIChatGpt35(request) {
   try {
     console.warn("request-1", request);
     console.warn("request-2", request.url);
-    const url = new URL(request.url);
-
-    const params = new URLSearchParams(url.search);
-
-    const promptValue = params.get("prompt");
-    const messageValue = params.get("messages");
+    const requestData = await request.json(); // 解析请求的 JSON 数据
+    const promptValue = requestData.prompt;
+    const messageValue  = requestData.messages;
 
     console.log("prompt:", promptValue);
 
@@ -186,14 +183,11 @@ async function handleRequestAIChatGpt35(request) {
 
 async function handleRequestAIChatGpt4(request) {
   try {
-    console.warn("request-1", request);
-    console.warn("request-2", request.url);
-    const url = new URL(request.url);
 
-    const params = new URLSearchParams(url.search);
 
-    const promptValue = params.get("prompt");
-    const messageValue = params.get("messages");
+    const requestData = await request.json(); // 解析请求的 JSON 数据
+    const promptValue = requestData.prompt;
+    const messageValue  = requestData.messages;
 
     console.log("prompt:", promptValue);
 
