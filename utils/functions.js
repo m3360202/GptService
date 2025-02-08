@@ -1,11 +1,13 @@
 import jwt from 'jsonwebtoken';
 import axios from "axios";
 import { Readable } from 'stream';
-import OpenAI from "openai";
+// import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAIKEY
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAIKEY
+// });
+
+const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
 async function handleRequestTest(req, res) {
   try {
@@ -117,21 +119,21 @@ async function handleRequestGML(req, res) {
   }
 }
 
-async function handleRequestGPT4(req, res) {
-  try {
+// async function handleRequestGPT4(req, res) {
+//   try {
     
-    const { prompt } = req.body;
-    const completion = await openai.chat.completions.create({
-      messages: prompt,
-      model: "gpt-4-turbo",
-    });
+//     const { prompt } = req.body;
+//     const completion = await openai.chat.completions.create({
+//       messages: prompt,
+//       model: "gpt-4-turbo",
+//     });
 
-    res.status(200).json(completion.choices[0]);
-  } catch (error) {
-    console.error('error---',error.message); // 只记录错误消息
-  res.status(506).json({ error: error.message });
-  }
-}
+//     res.status(200).json(completion.choices[0]);
+//   } catch (error) {
+//     console.error('error---',error.message); // 只记录错误消息
+//   res.status(506).json({ error: error.message });
+//   }
+// }
 
 async function handleRequestGML4ForPaperGpt(req, res) {
   try {
@@ -200,11 +202,45 @@ async function handleRequestZw(req, res) {
   }
 }
 
+
+async function handleCompareTrademark(req, res) {
+  console.log('------',keyword, pageIndex)
+  const { keyword, pageIndex } = req.query;
+  //get Trademarks by symbol or text
+  const params = {
+    act: 'similar',
+    cls: 35,
+    st: 1, //start with
+    sc: '1,2,3,4,5,6,7,8,9,10,11',
+    me: keyword, //symbol or text
+    pageIndex
+  }
+
+  const headers = {
+    'Cookie': cookie
+  };
+
+  try {
+    // 发送GET请求
+    const response = await axios.get('https://t.22.cn/interface/tradequery.ashx', {
+      params: params,
+      headers: headers
+    });
+
+    // 返回请求结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademark data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
 export {
   handleRequestTest,
   handleRequestGML,
-  handleRequestGPT4,
   handleRequestGML4ForPaperGpt,
   handleRequestZw,
-  generateToken
+  generateToken,
+  handleCompareTrademark
 };
