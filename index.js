@@ -1,7 +1,12 @@
 import express from "express";
 import cors from "cors";
-import axios from "axios";
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(express.json());
@@ -9,10 +14,12 @@ app.use(express.json());
 app.use(cors()); // Enable All CORS Requests
 
 app.options('*', cors()) // Enable CORS preflight for all routes 测试跨域的时候开启这个地方
-
+app.use(express.static(path.join(__dirname, 'public')));
 //Ending points
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
+
+const cookiePic = 'epower_session=61jrs5RDzVkMSMwon5jgQQhJR28fQidzsKKBe04l; epower_session_expires=1739180441; __51uvsct__Je2i8VisgdbR8Dl2=1; __51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; PHPSESSID=559a892tutqdorrbd4dcg9cl43; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%22385f4c68-827f-5c06-8e76-30371f61770c%22%2C%20%22vd%22%3A%205%2C%20%22stt%22%3A%20777473%2C%20%22dr%22%3A%20708766%2C%20%22expires%22%3A%201739183019080%2C%20%22ct%22%3A%201739181219080%7D';
 
 async function handleRequestTest(req, res) {
   try {
@@ -26,15 +33,40 @@ async function handleRequestTest(req, res) {
   }
 }
 
+async function handleGetGuestList(req, res) {
+
+  //get Trademarks by symbol or text
+  const data = {"appKey":"quandashi4940841937","signMethod":"md5","executor":"354665567958674f393843776d796e46387047646f413d3d","firstCgNos":[],"status":[],"brandStatusNames":[],"similarStatusNames":[],"brandStatus":[],"honorList":[],"sort":2,"timeType":1,"enterprisePatternList":[],"businessRequireList":[],"careTypes":[],"nationality":1,"type":7,"userId":"354665567958674f393843776d796e46387047646f413d3d","pageNo":3,"pageSize":20,"isOnlyNew":true,"isFilterConnect":true,"timestamp":1739272529136,"sign":"17392725808245091"}
+
+  const headers = {
+    'qdstoken': '84e20617-7fbc-4ee3-8b58-127e478d0ed8',
+    'content-type': 'application/json;charset=UTF-8'
+  };
+
+  try {
+    // 发送GET请求
+    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data,  {
+      headers: headers
+    });
+
+    // 返回请求结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
 async function handleGetTrademarkList(req, res) {
 
-  const { keyword, pageIndex } = req.query;
+  const { keyword, pageIndex, cls, st, sc } = req.query;
   //get Trademarks by symbol or text
   const params = {
     act: 'similar',
-    cls: 35,
-    st: 1, //start with
-    sc: '1,2,3,4,5,6,7,8,9,10,11',
+    cls,
+    st, //start with
+    sc,
     me: keyword, //symbol or text
     pageIndex
   }
@@ -52,6 +84,74 @@ async function handleGetTrademarkList(req, res) {
 
     // 返回请求结果
     res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
+async function handleGetTrademarkPicList(req, res) {
+  const { img_src, cls } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Origin': 'https://www.biaoyuan.com',
+    'Referer': 'https://www.biaoyuan.com/trademark/tm_img_search',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.97 Safari/537.36 Core/1.116.475.400 QQBrowser/13.5.6267.400',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Sec-Ch-Ua': '"Not)A;Brand";v="24", "Chromium";v="116"',
+    'Sec-Ch-Ua-Mobile': '?0',
+    'Sec-Ch-Ua-Platform': '"Windows"',
+    'Sec-Fetch-Dest': 'empty',
+    'Cookie': cookiePic 
+  };
+
+  const data = {
+    img_src,
+    class_id: cls
+  };
+
+  try {
+    // 清空public/images文件夹
+    const imagesDir = path.join(__dirname, 'public', 'images');
+    if (fs.existsSync(imagesDir)) {
+      fs.rmSync(imagesDir, { recursive: true });
+    }
+    fs.mkdirSync(imagesDir, { recursive: true });
+    // 发送POST请求
+    const response = await axios.post('https://www.biaoyuan.com/v1/tm/image_search', data, {
+      headers: headers
+    });
+
+    // 处理返回的数据
+    const modifiedData = await Promise.all(response.data.data.data.map(async (item) => {
+      const imageUrl = `https:${item.url}`;
+      const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+      const imageBuffer = imageResponse.data;
+
+      // 设置图片保存路径
+      const imageName = path.basename(imageUrl);
+      const savePath = path.join(__dirname, 'public', 'images', imageName);
+
+      // 确保目录存在
+      fs.mkdirSync(path.dirname(savePath), { recursive: true });
+
+      // 爬取目标数据源图片到服务器
+      fs.writeFileSync(savePath, imageBuffer);
+
+      // 返回修改后的数据
+      return {
+        ...item,
+        url: `/images/${imageName}`,
+        url150x100: `/images/${imageName}` // 你可以根据需要调整这里的逻辑
+      };
+    }));
+
+    // 返回请求结果
+    res.status(200).json({ data: modifiedData });
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
@@ -98,7 +198,6 @@ async function handleGetTrademarkDetail(req, res) {
   }
 }
 
-
 async function handleGetAllTrademarks(req, res) {
   const { Ps, Pi, keyword, type, state, pageIndex } = req.query;
 
@@ -143,6 +242,10 @@ async function handleGetAllTrademarks(req, res) {
 
 
 app.get("/handleGetTrademarkList", handleGetTrademarkList);
+
+app.get("/handleGetGuestList", handleGetGuestList);
+
+app.post("/handleGetTrademarkPicList", handleGetTrademarkPicList);
 
 app.get("/handleGetTrademarkDetail", handleGetTrademarkDetail);
 
