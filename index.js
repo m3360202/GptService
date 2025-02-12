@@ -32,11 +32,29 @@ async function handleRequestTest(req, res) {
     res.status(500).json(responseError);
   }
 }
+function addTimeDifferenceToNumber() {
+  // 获取当前时间戳
+  const currentTimestamp = Date.now();
 
+  // 创建指定日期的时间对象
+  const specifiedDate = new Date('2025-02-12T22:52:00Z');
+
+  // 获取指定日期的时间戳
+  const specifiedTimestamp = specifiedDate.getTime();
+
+  // 计算时间差
+  const timeDifference = BigInt(currentTimestamp) - BigInt(specifiedTimestamp);
+
+  // 将时间差加到指定的数字上
+  const largeNumber = "17392689537032950"; // 使用字符串表示大数
+  const result = BigInt(largeNumber) + timeDifference;
+
+  return result;
+}
 async function handleGetGuestList(req, res) {
 
   //get Trademarks by symbol or text
-  const data = {"appKey":"quandashi4940841937","signMethod":"md5","executor":"354665567958674f393843776d796e46387047646f413d3d","firstCgNos":[],"status":[],"brandStatusNames":[],"similarStatusNames":[],"brandStatus":[],"honorList":[],"sort":2,"timeType":1,"enterprisePatternList":[],"businessRequireList":[],"careTypes":[],"nationality":1,"type":7,"userId":"354665567958674f393843776d796e46387047646f413d3d","pageNo":3,"pageSize":20,"isOnlyNew":true,"isFilterConnect":true,"timestamp":1739272529136,"sign":"17392725808245091"}
+  const data = { "appKey": "quandashi4940841937", "signMethod": "md5", "executor": "354665567958674f393843776d796e46387047646f413d3d", "firstCgNos": [], "status": [], "brandStatusNames": [], "similarStatusNames": [], "brandStatus": [], "honorList": [], "sort": 2, "timeType": 1, "enterprisePatternList": [], "businessRequireList": [], "careTypes": [], "nationality": 1, "type": 7, "userId": "354665567958674f393843776d796e46387047646f413d3d", "pageNo": 3, "pageSize": 20, "isOnlyNew": true, "isFilterConnect": true, "timestamp": 1739272529136, "sign": "17392725808245091" }
 
   const headers = {
     'qdstoken': '84e20617-7fbc-4ee3-8b58-127e478d0ed8',
@@ -45,7 +63,7 @@ async function handleGetGuestList(req, res) {
 
   try {
     // 发送GET请求
-    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data,  {
+    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data, {
       headers: headers
     });
 
@@ -106,7 +124,7 @@ async function handleGetTrademarkPicList(req, res) {
     'Sec-Ch-Ua-Mobile': '?0',
     'Sec-Ch-Ua-Platform': '"Windows"',
     'Sec-Fetch-Dest': 'empty',
-    'Cookie': cookiePic 
+    'Cookie': cookiePic
   };
 
   const data = {
@@ -152,6 +170,57 @@ async function handleGetTrademarkPicList(req, res) {
 
     // 返回请求结果
     res.status(200).json({ data: modifiedData });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
+async function handleGetQDSTrademarkPicList(req, res) {
+  const { img_src, cls } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json;charset=utf-8'
+  };
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "v": "1.0",
+    "executor": "354665567958674f393843776d796e46387047646f413d3d",
+    "sign": resultString,
+    "appKey": "quandashi4380977532",
+    "partnerId": "1000",
+    "signMethod": "md5",
+    "timestamp": resultString,
+    "userIde": "354665567958674f393843776d796e46387047646f413d3d",
+    "platform": 2,
+    "format": "json",
+    "topN": 50,
+    "category": "",
+    "year": "",
+    "status": "",
+    "法律状态": "",
+    "position": "-2.7190102021753164e-14,0,347,287",
+    "modalType": 1,
+    "检索模型": 1,
+    "群组": "",
+    "imageDataUrl": "brand/2025/02/11/d17a713b-632e-45c0-8f81-fb81f6ba46e4/微信图片_20250210183135.png",
+    "imageData": img_src
+  };
+
+  try {
+
+    // 发送POST请求
+    const response = await axios.post('https://phoenix.quandashi.com/brandSearch/brandImageSearch', data, {
+      headers: headers
+    });
+    // console.log('aaaaaaa',response?.data?.data);
+
+
+    // 返回请求结果
+    res.status(200).json({ data: response?.data?.data });
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
@@ -246,6 +315,8 @@ app.get("/handleGetTrademarkList", handleGetTrademarkList);
 app.get("/handleGetGuestList", handleGetGuestList);
 
 app.post("/handleGetTrademarkPicList", handleGetTrademarkPicList);
+
+app.post("/handleGetQDSTrademarkPicList", handleGetQDSTrademarkPicList);
 
 app.get("/handleGetTrademarkDetail", handleGetTrademarkDetail);
 
