@@ -228,6 +228,51 @@ async function handleGetQDSTrademarkPicList(req, res) {
   }
 }
 
+async function handleGetQDSTrademarkMutilList(req, res) {
+  const { keywords, cls, total } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json;charset=utf-8'
+  };
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "v": "1.0",
+    "executor": "354665567958674f393843776d796e46387047646f413d3d",
+    "sign": resultString,
+    "appKey": "quandashi4380977532",
+    "partnerId": "1000",
+    "signMethod": "md5",
+    "timestamp": resultString,
+    "userIde": "354665567958674f393843776d796e46387047646f413d3d",
+    "platform": 1,
+    "brandNames": keywords,
+    "applicantFilter": "",
+    "pageNo": 0,
+    "pageSize": 10,
+    "total": total,
+    "typeCode": cls
+  };
+
+  try {
+
+    // 发送POST请求
+    const response = await axios.post('https://phoenix.quandashi.com/brandSearch/batchCheck', data, {
+      headers: headers
+    });
+    // console.log('aaaaaaa',response?.data?.data);
+
+
+    // 返回请求结果
+    res.status(200).json({ data: response?.data });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
 async function handleGetTrademarkDetail(req, res) {
   const { cls, detailId } = req.query;
 
@@ -317,6 +362,8 @@ app.get("/handleGetGuestList", handleGetGuestList);
 app.post("/handleGetTrademarkPicList", handleGetTrademarkPicList);
 
 app.post("/handleGetQDSTrademarkPicList", handleGetQDSTrademarkPicList);
+
+app.post("/handleGetQDSTrademarkMutilList", handleGetQDSTrademarkMutilList);
 
 app.get("/handleGetTrademarkDetail", handleGetTrademarkDetail);
 
