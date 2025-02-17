@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
-const cookiePic = 'epower_session=61jrs5RDzVkMSMwon5jgQQhJR28fQidzsKKBe04l; epower_session_expires=1739180441; __51uvsct__Je2i8VisgdbR8Dl2=1; __51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; PHPSESSID=559a892tutqdorrbd4dcg9cl43; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%22385f4c68-827f-5c06-8e76-30371f61770c%22%2C%20%22vd%22%3A%205%2C%20%22stt%22%3A%20777473%2C%20%22dr%22%3A%20708766%2C%20%22expires%22%3A%201739183019080%2C%20%22ct%22%3A%201739181219080%7D';
+const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=hn54gsm8kXrdj9eSg1XsGs9WwU35HenbTsTcNJfg; epower_session_expires=1739681062; __51uvsct__Je2i8VisgdbR8Dl2=7; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%226336c57d-7d17-595f-bb32-1b32262fedf0%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2032497%2C%20%22dr%22%3A%2010992%2C%20%22expires%22%3A%201739682895656%2C%20%22ct%22%3A%201739681095656%7D';
 
 async function handleRequestTest(req, res) {
   try {
