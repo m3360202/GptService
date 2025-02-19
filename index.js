@@ -26,7 +26,7 @@ const appKey = 'quandashi6495266219';
 // const executor = "354665567958674f393843776d796e46387047646f413d3d";
 const executor = '38627263446159584c355a4a536a336a7a3549542b513d3d';
 
-const getDataCookie = 'SECKEY_ABVK=tQ4p06opV6uTIYw2C8L7g+OaZ2wVyUpGeOJ3lxSZFZg%3D; BMAP_SECKEY=viA_dD94NekwwzHj7o2v3cT53nY8DTRCQoicUc5M0QW9zsS37E9jkBWChGZnASp7JhnO6n2S1YfjxGapztBir6H_zVrgL6Jx3Z1OvCLuAKnFmWiJMcJP_ovbsmmA2Rcn18UvWnIMoHyCsjkBt2htmZJWxO7ShsGLkRFCpMDZP6o-KIroAVo8AwmumVAF3kbQ; _csrf-frontend=9444919fbffc977338d620d53a902eaaff64195ff7010f091f1724d5b8b925a6a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-frontend%22%3Bi%3A1%3Bs%3A32%3A%22h4e5cJiEux4YkZBvDP1f9KUGrWYb0g32%22%3B%7D; satoken=4f11efd7f1dc20a7c2cfe8b2d719308c7545f0b52ccf801f7c7510617f09fd70a%3A2%3A%7Bi%3A0%3Bs%3A7%3A%22satoken%22%3Bi%3A1%3Bs%3A36%3A%22687bfeed-6405-483f-bdea-0b2764a0d7f2%22%3B%7D; QDS_AGENT_INFO=738b3fc6fa5d5ca6137be2bc8a3df088960da6aecc0de7b216d085378a7f2b93a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_AGENT_INFO%22%3Bi%3A1%3Ba%3A12%3A%7Bs%3A2%3A%22id%22%3Bs%3A48%3A%2238627263446159584c355a4a536a336a7a3549542b513d3d%22%3Bs%3A12%3A%22agentOrganId%22%3Bi%3A16642%3Bs%3A8%3A%22realName%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A5%3A%22phone%22%3Bs%3A11%3A%2213833078686%22%3Bs%3A5%3A%22email%22%3Bs%3A17%3A%223062244746%40QQ.com%22%3Bs%3A7%3A%22orgName%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22roleType%22%3Bi%3A1%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A11%3A%22sourceToken%22%3Bs%3A36%3A%22a8a1dde2-9d76-4912-a1ab-f78267510ac2%22%3Bs%3A7%3A%22satoken%22%3Bs%3A36%3A%22687bfeed-6405-483f-bdea-0b2764a0d7f2%22%3Bs%3A9%3A%22tokenName%22%3Bs%3A8%3A%22qdsToken%22%3B%7D%7D; QDS_ORGAN_INFO=4fc1361d3477e6aa47e44e0c4405b94d72a3d777e9a0987f934b9838d3130977a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_ORGAN_INFO%22%3Bi%3A1%3Ba%3A17%3A%7Bs%3A7%3A%22adminId%22%3Bi%3A16642%3Bs%3A13%3A%22adminagencies%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A13%3A%22admincontacts%22%3Bs%3A9%3A%22%E9%A9%AC%E5%BB%BA%E5%86%9B%22%3Bs%3A10%3A%22adminPhone%22%3Bs%3A11%3A%2213833078686%22%3Bs%3A13%3A%22principalName%22%3Bs%3A0%3A%22%22%3Bs%3A12%3A%22principalTel%22%3Bs%3A0%3A%22%22%3Bs%3A7%3A%22address%22%3Bs%3A27%3A%22%E6%B2%B3%E5%8C%97%E7%9C%81%E4%BF%9D%E5%AE%9A%E5%B8%82%E7%AB%9E%E7%A7%80%E5%8C%BA%22%3Bs%3A8%3A%22isChoose%22%3Bs%3A1%3A%220%22%3Bs%3A21%3A%22domesticRecipientName%22%3Bs%3A0%3A%22%22%3Bs%3A24%3A%22domesticRecipientAddress%22%3Bs%3A0%3A%22%22%3Bs%3A25%3A%22domesticRecipientPostcode%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A11%3A%22submitEmail%22%3BN%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A13%3A%22exportSetting%22%3Bs%3A14%3A%227%2C10%2C8%2C9%2C12%2C15%22%3Bs%3A15%3A%22agentPersonList%22%3BN%3Bs%3A8%3A%22userName%22%3Bs%3A9%3A%22%E9%A9%AC%E5%BB%BA%E5%86%9B%22%3B%7D%7D';
+const getDataCookie = 'SECKEY_ABVK=tQ4p06opV6uTIYw2C8L7g1r+n7QXscY7C1ukyds9eo8%3D; BMAP_SECKEY=viA_dD94NekwwzHj7o2v3WbHlB6rgcHWmJTCv0DmQCJBnHQ2SxysVlOTxRi--AUDeS_FPc3SznAJ9lSFwRHMkpNFdrDEYOddSqvKBZBEjc7PBlqcAtW2eDqnzutLDUF8i96BDzX2V7Uu6U4trhzbifDtKM-Rh3fJDp3T4dKkQoy2nECurEDwhUinBeVmYY78; _csrf-frontend=9444919fbffc977338d620d53a902eaaff64195ff7010f091f1724d5b8b925a6a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-frontend%22%3Bi%3A1%3Bs%3A32%3A%22h4e5cJiEux4YkZBvDP1f9KUGrWYb0g32%22%3B%7D; satoken=2cb69b4c50d26b19675fb965e3da714b0409ac4ed65f910421ffc564bd3722a7a%3A2%3A%7Bi%3A0%3Bs%3A7%3A%22satoken%22%3Bi%3A1%3Bs%3A36%3A%22fa6cd0d2-29d0-425c-bcf0-7ed510c7a096%22%3B%7D; QDS_AGENT_INFO=0d25815e14d0cf1a8a17d3653e560eb20241fdd377be72add35ea803f8b5f9aea%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_AGENT_INFO%22%3Bi%3A1%3Ba%3A12%3A%7Bs%3A2%3A%22id%22%3Bs%3A48%3A%2238627263446159584c355a4a536a336a7a3549542b513d3d%22%3Bs%3A12%3A%22agentOrganId%22%3Bi%3A16642%3Bs%3A8%3A%22realName%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A5%3A%22phone%22%3Bs%3A11%3A%2213833078686%22%3Bs%3A5%3A%22email%22%3Bs%3A17%3A%223062244746%40QQ.com%22%3Bs%3A7%3A%22orgName%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22roleType%22%3Bi%3A1%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A11%3A%22sourceToken%22%3Bs%3A36%3A%228acd1a09-22ce-4074-a98d-9908df2f8907%22%3Bs%3A7%3A%22satoken%22%3Bs%3A36%3A%22fa6cd0d2-29d0-425c-bcf0-7ed510c7a096%22%3Bs%3A9%3A%22tokenName%22%3Bs%3A8%3A%22qdsToken%22%3B%7D%7D; QDS_ORGAN_INFO=4fc1361d3477e6aa47e44e0c4405b94d72a3d777e9a0987f934b9838d3130977a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_ORGAN_INFO%22%3Bi%3A1%3Ba%3A17%3A%7Bs%3A7%3A%22adminId%22%3Bi%3A16642%3Bs%3A13%3A%22adminagencies%22%3Bs%3A39%3A%22%E6%98%93%E7%9F%A5%E8%A1%8C%E4%BF%9D%E5%AE%9A%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A13%3A%22admincontacts%22%3Bs%3A9%3A%22%E9%A9%AC%E5%BB%BA%E5%86%9B%22%3Bs%3A10%3A%22adminPhone%22%3Bs%3A11%3A%2213833078686%22%3Bs%3A13%3A%22principalName%22%3Bs%3A0%3A%22%22%3Bs%3A12%3A%22principalTel%22%3Bs%3A0%3A%22%22%3Bs%3A7%3A%22address%22%3Bs%3A27%3A%22%E6%B2%B3%E5%8C%97%E7%9C%81%E4%BF%9D%E5%AE%9A%E5%B8%82%E7%AB%9E%E7%A7%80%E5%8C%BA%22%3Bs%3A8%3A%22isChoose%22%3Bs%3A1%3A%220%22%3Bs%3A21%3A%22domesticRecipientName%22%3Bs%3A0%3A%22%22%3Bs%3A24%3A%22domesticRecipientAddress%22%3Bs%3A0%3A%22%22%3Bs%3A25%3A%22domesticRecipientPostcode%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A11%3A%22submitEmail%22%3BN%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A13%3A%22exportSetting%22%3Bs%3A14%3A%227%2C10%2C8%2C9%2C12%2C15%22%3Bs%3A15%3A%22agentPersonList%22%3BN%3Bs%3A8%3A%22userName%22%3Bs%3A9%3A%22%E9%A9%AC%E5%BB%BA%E5%86%9B%22%3B%7D%7D';
 
 async function handleRequestTest(req, res) {
   try {
@@ -393,6 +393,30 @@ async function handleGetWUXIAOTargetList(req, res) {
   }
 }
 
+async function handleGetThreeClueList(req, res) {
+  const { pageNo, pageSize } = req.params;
+
+  const headers = {
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Host': 'client.qianjianjihua.com',
+    'Origin': 'http://client.qianjianjihua.com',
+    'Referer': 'http://client.qianjianjihua.com/customer-clue/wxdb',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    'Cookie': getDataCookie
+  };
+
+  try {
+    const response = await axios.get(`http://client.qianjianjihua.com/customer-clue/query-three-clue-list?pageNo=${pageNo}&pageSize=${pageSize}&intCls=&province=&city=&regYear=&appDate=&state=&%E4%B8%80%E7%BA%A7%E5%9C%B0%E5%8C%BA=&%E4%BA%8C%E7%BA%A7%E5%9C%B0%E5%8C%BA=&xzDateType=&nameType=&beConnected=&applicantType=&similar=1&similarStatusName=&sortField=create_time&descAsc=desc&riskTm=&rejectAppdate=&changeType=&createStartDate=&createEndDate=&tmCountStr=&isShowTopApplicant=0&businessStatus=&connectType=&bookType=&similarStatus=&statusName=&filingStatus=&industry=&filterExport=1`, { headers: headers });
+
+    // Return the request result
+    res.status(200).json(response.data);
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching threeClueList data:', error);
+    res.status(500).json({ error: 'Failed to fetch threeClueList data' });
+  }
+}
+
 async function handleGetCHESANargetList(req, res) {
   const { pageNo, pageSize } = req.body;
 
@@ -414,7 +438,39 @@ async function handleGetCHESANargetList(req, res) {
   data.append('filterExport', 1);
 
   try {
-    const response = await axios.post('http://client.qianjianjihua.com/customer-clue/query-wxddb-clue-list', data, { headers: headers });
+    const response = await axios.post('http://client.qianjianjihua.com/customer-clue/query-csddb-clue-list', data, { headers: headers });
+
+    // 返回请求结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
+async function handleGetBHList(req, res) {
+  const { pageNo, pageSize } = req.body;
+
+  const headers = {
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Host': 'client.qianjianjihua.com',
+    'Origin': 'http://client.qianjianjihua.com',
+    'Referer': 'http://client.qianjianjihua.com/customer-clue/wxdb',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    'Cookie': getDataCookie
+  };
+
+  const data = new URLSearchParams();
+  data.append('pageNo', pageNo);
+  data.append('pageSize', pageSize);
+  data.append('sortField', 'create_time');
+  data.append('descAsc', 'desc');
+  data.append('statusName', '驳回待复审');
+  data.append('filterExport', 1);
+
+  try {
+    const response = await axios.post('http://client.qianjianjihua.com/customer-clue/query-bhdfs-clue-list', data, { headers: headers });
 
     // 返回请求结果
     res.status(200).json(response.data);
@@ -437,9 +493,13 @@ app.post("/handleGetQDSTrademarkMutilList", handleGetQDSTrademarkMutilList);
 
 app.post("/handleGetTargetList", handleGetCHESANargetList);
 
+app.post("/handleGetBHList", handleGetBHList);
+
 app.get("/handleGetTrademarkDetail", handleGetTrademarkDetail);
 
 app.get("/handleGetAllTrademarks", handleGetAllTrademarks);
+
+app.get("/handleGetThreeClueList", handleGetThreeClueList);
 
 app.get("/handleRequestTest", handleRequestTest);
 
