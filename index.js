@@ -17,7 +17,7 @@ app.options('*', cors()) // Enable CORS preflight for all routes 测试跨域的
 app.use(express.static(path.join(__dirname, 'public')));
 //Ending points
 
-const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=hn54gsm8kXrdj9eSg1XsGs9WwU35HenbTsTcNJfg; epower_session_expires=1739681062; __51uvsct__Je2i8VisgdbR8Dl2=7; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%226336c57d-7d17-595f-bb32-1b32262fedf0%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2032497%2C%20%22dr%22%3A%2010992%2C%20%22expires%22%3A%201739682895656%2C%20%22ct%22%3A%201739681095656%7D';
+const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=EAbNVb9mr5gnDINJNi1BIHBaNgGTcl1DdIqa6n7I; epower_session_expires=1739964385; __51uvsct__Je2i8VisgdbR8Dl2=8; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%221e20f4bf-477b-5c25-aeb2-64cf3d124945%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2033853%2C%20%22dr%22%3A%2010247%2C%20%22expires%22%3A%201739966220438%2C%20%22ct%22%3A%201739964420438%7D';
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
@@ -205,7 +205,7 @@ async function handleGetQDSTrademarkPicList(req, res) {
     "platform": 2,
     "format": "json",
     "topN": 50,
-    "category": "",
+    "category": cls,
     "year": "",
     "status": "",
     "法律状态": "",
