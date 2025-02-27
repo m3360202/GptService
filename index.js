@@ -4,6 +4,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { date } from "zod";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,11 +18,13 @@ app.options('*', cors()) // Enable CORS preflight for all routes 测试跨域的
 app.use(express.static(path.join(__dirname, 'public')));
 //Ending points
 
-const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=PjySywS0XqrvtTpntsw898NCB3gvcSCPmNnrHyeM; epower_session_expires=1740283677; __51uvsct__Je2i8VisgdbR8Dl2=9; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%22ee2ff7bc-928f-5f6c-b177-45f1e331a264%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2028733%2C%20%22dr%22%3A%209400%2C%20%22expires%22%3A%201740285507304%2C%20%22ct%22%3A%201740283707304%7D';
+const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=WZEPPw0Yrgs0gI5mp36UNxnEuekQFzqvLL4UILVT; epower_session_expires=1740548953; __51uvsct__Je2i8VisgdbR8Dl2=10; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%2203b3fe6a-521b-57e5-a866-3192eacf327a%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2015858%2C%20%22dr%22%3A%2010989%2C%20%22expires%22%3A%201740550769522%2C%20%22ct%22%3A%201740548969522%7D';
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
 const appKey = 'quandashi6495266219';
+const globalAppKey = 'quandashi7920319216';
+const globalExecutor = '38627263446159584c355a4a536a336a7a3549542b513d3d';
 // const appKey = 'quandashi4940841937';
 // const executor = "354665567958674f393843776d796e46387047646f413d3d";
 const executor = '38627263446159584c355a4a536a336a7a3549542b513d3d';
@@ -184,8 +187,64 @@ async function handleGetTrademarkPicList(req, res) {
   }
 }
 
+async function handleGetGlobalPicList(req, res) {
+  const { img_src, cls, modal } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json;charset=utf-8'
+  };
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "v": "1.0",
+    "executor": globalExecutor,
+    "identityIde": globalExecutor,
+    "userId": globalExecutor,
+    "userIde": globalExecutor,
+    "sign": resultString,
+    "appKey":  globalAppKey,
+    "pageNo":1,
+    "pageSize": 50,
+    "signMethod": "md5",
+    "timestamp": resultString,
+    "userIde": "354665567958674f393843776d796e46387047646f413d3d",
+    "platform": 2,
+    "format": "json",
+    "topN": 50,
+    "category": cls,
+    "keyType": "no_val",
+    "year": "",
+    "status": "",
+    "法律状态": "",
+    "position": "-2.7190102021753164e-14,0,347,287",
+    "retrievalModel": 1,
+    "topN": 2000,
+    "timestamp": Date.now(),
+    "imageDataUrl": "brand/2025/02/11/d17a713b-632e-45c0-8f81-fb81f6ba46e4/微信图片_20250210183135.png",
+    "imageData": img_src
+  };
+
+  try {
+
+    // 发送POST请求
+    const response = await axios.post('https://phoenix.quandashi.com/global/brandList', data, {
+      headers: headers
+    });
+    // console.log('aaaaaaa',response?.data?.data);
+
+
+    // 返回请求结果
+    res.status(200).json({ data: response?.data?.data });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
 async function handleGetQDSTrademarkPicList(req, res) {
-  const { img_src, cls } = req.body;
+  const { img_src, cls, modal } = req.body;
 
   const headers = {
     'Content-Type': 'application/json;charset=utf-8'
@@ -211,7 +270,7 @@ async function handleGetQDSTrademarkPicList(req, res) {
     "法律状态": "",
     "position": "-2.7190102021753164e-14,0,347,287",
     "modalType": 1,
-    "检索模型": 1,
+    "检索模型": modal,
     "群组": "",
     "imageDataUrl": "brand/2025/02/11/d17a713b-632e-45c0-8f81-fb81f6ba46e4/微信图片_20250210183135.png",
     "imageData": img_src
@@ -234,6 +293,48 @@ async function handleGetQDSTrademarkPicList(req, res) {
     res.status(500).json({ error: 'Failed to fetch trademark data' });
   }
 }
+
+async function handleUpdateAddress(req, res) {
+  const { detailId } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json;charset=utf-8'
+  };
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "v": "1.0",
+    "executor": executor,
+    "sign": resultString,
+    "appKey":  appKey,
+    "partnerId": "1000",
+    "signMethod": "md5",
+    "timestamp": resultString,
+    "userIde": "354665567958674f393843776d796e46387047646f413d3d",
+    "isClientDetail": 1,
+    "source": 1,
+    "userIde": "38627263446159584c355a4a536a336a7a3549542b513d3d",
+    "detailId": detailId
+  }
+
+  try {
+
+    // 发送POST请求
+    const response = await axios.post('https://phoenix.quandashi.com/brandSearch/brandSearchDetailByDetailId', data, {
+      headers: headers
+    });
+    // console.log('aaaaaaa',response?.data?.data);
+
+    // 返回请求结果
+    res.status(200).json({ data: response?.data?.data.brand.address });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
 
 async function handleGetQDSTrademarkMutilList(req, res) {
   const { keywords, cls, total } = req.body;
@@ -481,6 +582,8 @@ async function handleGetBHList(req, res) {
   }
 }
 
+app.post("/handleUpdateAddress", handleUpdateAddress);
+
 app.get("/handleGetTrademarkList", handleGetTrademarkList);
 
 app.get("/handleGetGuestList", handleGetGuestList);
@@ -488,6 +591,8 @@ app.get("/handleGetGuestList", handleGetGuestList);
 app.post("/handleGetTrademarkPicList", handleGetTrademarkPicList);
 
 app.post("/handleGetQDSTrademarkPicList", handleGetQDSTrademarkPicList);
+
+app.post("/handleGetGlobalPicList", handleGetGlobalPicList);
 
 app.post("/handleGetQDSTrademarkMutilList", handleGetQDSTrademarkMutilList);
 
