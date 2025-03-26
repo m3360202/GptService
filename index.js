@@ -583,7 +583,7 @@ async function handleGetCHESANargetList(req, res) {
     status: [],
     brandStatusNames: [],
     similarStatusNames: [],
-    receiveToNow: "5",
+    receiveToNow: "1",//1 2 3 4
     brandStatus: [],
     honorList: [],
     sort: 2,
@@ -637,7 +637,7 @@ async function handleGetWUXIAOTargetList(req, res) {
     status: [],
     brandStatusNames: [],
     similarStatusNames: [],
-    receiveToNow: "1",
+    receiveToNow: "1",//1 2可用
     brandStatus: [],
     honorList: [],
     sort: 2,
@@ -667,6 +667,60 @@ async function handleGetWUXIAOTargetList(req, res) {
   }
 }
 async function handleGetBHList(req, res) {
+  const { pageNo, pageSize } = req.body;
+
+  const headers = {
+    'Accept': 'application/json, text/plain, */*',
+    'Host': 'phoenix.quandashi.com',
+    'Origin': 'http://www.haixingip.com',
+    'Referer': 'http://www.haixingip.com/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    'client': 'v2',
+    'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+    'Content-Type': 'application/json',
+    'Connection': 'keep-alive'
+  };
+
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+  const data = {
+    appKey: qdappKey,
+    signMethod: "md5",
+    executor: qdexecutor,
+    firstCgNos: [],
+    status: [],
+    brandStatusNames: [],
+    similarStatusNames: [],
+    appToNow: "1",//1 2可以有效
+    brandStatus: [],
+    honorList: [],
+    sort: 2,
+    timeType: 2,
+    enterprisePatternList: [],
+    businessRequireList: [],
+    careTypes: [],
+    type: 3,
+    userId: "706f624f47546a7176496358796e52637636753774513d3d",
+    pageNo: pageNo,
+    pageSize: pageSize,
+    isOnlyNew: true,
+    isFilterConnect: true,
+    timestamp: resultString,
+    sign: resultString
+  };
+
+  try {
+    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data, { headers: headers });
+
+    // 返回请求结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+async function handleGetqjBHList(req, res) {
   const { pageNo, pageSize } = req.body;
 
   const headers = {
