@@ -22,6 +22,11 @@ const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
+const cookieQixin = 'aliyungf_tc=360573025649aeb2d40f51762a36bdbcc01b6e9d11210ff46af9c8f8e81ff9e0; sem=baidusemo1; baiduSem_kwFrom=baidusemo1; web-canary=always; adv-banner_visible=%5B%5D; Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71=1751615080; HMACCOUNT=F04A050687397451; flogger_fpid=aaf00055715f460f8057608ebc8a4e39; fid=c95ee9b7c8a1cf731c1d9e7ca59f6b8c; acw_tc=ac11000117516183390191440e9e644ae7474091d7a01f923127c450bf26f0; pdid=s%3A81sd1y_cFZird7YFocuYdsaqcApZ3MNM.Na6PlegR35v5dhndwlycguIsx%2BKRMRay0AWztUajXGs; Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71=1751618339';
+
+const bedb0 = 'ab2c6ec651f16106c645c65ffb6702dd8d4222465f773469c61077176dd5b42d';
+
+const fk = '15eublyr8fulqw9dxy';
 
 const globalAppKey = 'quandashi4380977532';
 const globalExecutor = '354665567958674f393843776d796e46387047646f413d3d';
@@ -472,6 +477,51 @@ async function handleGetAllTrademarks(req, res) {
   }
 }
 
+// 通过启信宝获取当前公司的电话信息
+async function handleGetqixinPhone(key, page) {
+
+  const headers = {
+    'bedb0': bedb0,
+    'fk': fk,
+    'host': 'www.qixin.com',
+    'ok': '[{"name":"items[].name","type":"e"}]',
+    'Cookie': cookieQixin,
+    'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+    'content-type': 'application/json',
+    'Accept': '*/*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive'
+  };
+
+  const data = {
+    key: key,
+    page: page
+  };
+
+  try {
+    // 发送POST请求
+    const response = await axios.post('https://www.qixin.com/api-proxy/search/common', data, {
+      headers: headers
+    });
+    console.log('启信宝获取当前公司的电话信息 response', key, page, response?.data);
+    // 检查返回数据是否有效
+    if (response.data && response.data.items && response.data.items.length > 0) {
+      const firstItem = response.data.items[0];
+      const phone = firstItem.phone || '';
+      
+      // 返回第一个元素的phone属性值
+      return phone;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching qixin phone data:', error);
+    return null;
+  }
+}
+
+
 async function handleGetqjWUXIAOTargetList(req, res) {
   const { pageNo, pageSize } = req.body;
 
@@ -655,10 +705,41 @@ async function handleGetWUXIAOTargetList(req, res) {
     sign: resultString
   };
 
+  // 延迟函数
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   try {
     const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data, { headers: headers });
 
-    // 返回请求结果
+    // 检查返回数据是否有效
+    if (response.data && response.data.data && response.data.data.list) {
+      const list = response.data.data.list;
+      
+      // 为每个列表元素获取启信宝电话号码
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        if (item.applicantCn) {
+          console.log(`正在获取第 ${i + 1}/${list.length} 个企业的电话号码: ${item.applicantCn}`);
+          
+          const qixinPhone = await handleGetqixinPhone(item.applicantCn, 1);
+          
+          // 如果获取到有效电话号码，则替换原有的contactPhone
+          if (qixinPhone && qixinPhone.trim() !== '') {
+            item.contactPhone = qixinPhone;
+            console.log(`已更新 ${item.applicantCn} 的电话号码: ${qixinPhone}`);
+          } else {
+            console.log(`未获取到 ${item.applicantCn} 的电话号码，保持原有号码: ${item.contactPhone || '无'}`);
+          }
+          
+          // 每次请求后延迟1秒（除了最后一个）
+          if (i < list.length - 1) {
+            await delay(1000);
+          }
+        }
+      }
+    }
+
+    // 返回处理后的结果
     res.status(200).json(response.data);
   } catch (error) {
     // 处理错误
@@ -666,6 +747,7 @@ async function handleGetWUXIAOTargetList(req, res) {
     res.status(500).json({ error: 'Failed to fetch trademark data' });
   }
 }
+
 async function handleGetBHList(req, res) {
   const { pageNo, pageSize } = req.body;
 
@@ -691,7 +773,7 @@ async function handleGetBHList(req, res) {
     status: [],
     brandStatusNames: [],
     similarStatusNames: [],
-    appToNow: "1",//1 2可以有效
+    appToNow: "2",//1 2可以有效
     brandStatus: [],
     honorList: [],
     sort: 2,
@@ -779,6 +861,8 @@ app.get("/handleGetAllTrademarks", handleGetAllTrademarks);
 app.get("/handleGetThreeClueList", handleGetThreeClueList);
 
 app.get("/handleRequestTest", handleRequestTest);
+
+app.post("/handleGetqixinPhone", handleGetqixinPhone);
 
 //Functions write here
 
