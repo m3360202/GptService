@@ -22,11 +22,11 @@ const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2
 
 const cookie = 'landpage=http://www.22.cn/index.aspx; LANREN_BOTTOM=popupValue; ASP.NET_SessionId=anywwg4ow3fts3stlagmeqdz';
 
-const cookieQixin = 'aliyungf_tc=360573025649aeb2d40f51762a36bdbcc01b6e9d11210ff46af9c8f8e81ff9e0; baiduSem_kwFrom=baidusemo1; web-canary=always; adv-banner_visible=%5B%5D; Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71=1751615080; HMACCOUNT=F04A050687397451; flogger_fpid=aaf00055715f460f8057608ebc8a4e39; fid=c95ee9b7c8a1cf731c1d9e7ca59f6b8c; pdid=s%3A81sd1y_cFZird7YFocuYdsaqcApZ3MNM.Na6PlegR35v5dhndwlycguIsx%2BKRMRay0AWztUajXGs; acw_tc=ac11000117516213088464266ef84e30a78e8cc16975c78c19f25d770e096a; Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71=1751622172'
+const cookieQixin = 'web-canary=always; flogger_fpid=aaf00055715f460f8057608ebc8a4e39; adv-banner_visible=%5B%5D; fid=c95ee9b7c8a1cf731c1d9e7ca59f6b8c; pdid=s%3AzGK1UzS_WYiUWQofSntIRR-KWxu4eKWa.XngoFL2C%2BPOeLR3fxeIQpDCUFaocxXyHt1gWun5eMrg; aliyungf_tc=3ab5552c711309c1493a335a8debd73a2ff299e5e770fb8557c7d1693983d482; acw_tc=ac11000117518044990775393e939a0c559ce8bb0992c98aff6189b99a5cb2; Hm_lvt_52d64b8d3f6d42a2e416d59635df3f71=1751703163,1751703323,1751766194,1751804467; HMACCOUNT=F04A050687397451; Hm_lpvt_52d64b8d3f6d42a2e416d59635df3f71=1751804641'
 
-const bedb0 = 'b8ffe555efd01fa874e5e66365ef016cd0756ff13cb4fd9f7fa2d54e3dd7c842'
+const bedb0 = '15526a5da268751a887039835e797c3189f7793522d2fe8aa379d3f6e469d76e'
 
-const fk = '461apy1wh9mjn9wwb6'
+const fk = 'm2utchkmu3w40ofkn9'
 
 const globalAppKey = 'quandashi4380977532';
 const globalExecutor = '354665567958674f393843776d796e46387047646f413d3d';
@@ -297,7 +297,37 @@ async function handleGetQDSTrademarkPicList(req, res) {
 
 
     // 返回请求结果
-    res.status(200).json({ data: response?.data?.data });
+    const searchReport = response?.data?.data?.['检索报告'];
+    
+    if (searchReport && cls) {
+      // 将cls转换为数组（如果不是数组的话）
+      const clsArray = Array.isArray(cls) ? cls : [cls];
+      
+      // 根据cls提取对应的数据
+      const extractedData = [];
+      clsArray.forEach(clsItem => {
+        if (searchReport[clsItem]) {
+          extractedData.push({
+            cls: clsItem,
+            ...searchReport[clsItem]
+          });
+        }
+      });
+      
+      // 整理数据格式
+      const formattedData = extractedData.map(item => ({
+        类别: item.cls,
+        风险等级: item.风险等级,
+        近似总数: item.近似总数,
+        近似数据: item.近似数据 || [],
+        群组风险: item.群组风险 || {}
+      }));
+      
+      res.status(200).json({ data: formattedData });
+    } else {
+      // 如果没有cls参数或检索报告为空，返回原始数据
+      res.status(200).json({ data: searchReport });
+    }
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
@@ -348,7 +378,7 @@ async function handleUpdateAddress(req, res) {
   }
 }
 
-async function handleGetQDSTrademarkMutilList(req, res) {
+async function handleGetQDSTrademarkMutilListOld(req, res) {
   const { keywords, cls, total } = req.body;
 
   const headers = {
@@ -384,11 +414,76 @@ async function handleGetQDSTrademarkMutilList(req, res) {
     const response = await axios.post('https://phoenix.quandashi.com/brandSearch/batchCheck', data, {
       headers: headers
     });
-     console.log('aaaaaaa',response?.data?.data);
+     console.log('aaaaaaa',response?.data);
 
 
     // 返回请求结果
     res.status(200).json({ data: response?.data });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
+async function handleGetQDSTrademarkMutilList(req, res) {
+  const { keywords, cls, total } = req.body;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'User-Agent': '	Apifox/1.0.0 (https://apifox.com)',
+    'Host': 'qds.quandashi.com',
+    'Referer': 'https://so.quandashi.com/',
+    'Qdstoken': '283d9128-234c-4610-9b99-55c728d930df'
+
+  };
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "advanceFilter":"",
+    "appKey":"quandashi4380977532",
+    "brandRule":"1",
+    "countryName":"",
+    "createYear":"",
+    "field":"all",
+    "groupFilter":"",
+    "intCls":"",
+    "page":0,
+    "pageSize":20,
+    "param":2,
+    "partnerId":"1000",
+    "platform":1,
+    "q":keywords,
+    "searchKey":"",
+    "serviceGoods":cls,
+    "sign":resultString,
+    "signMethod":"md5",
+    "sort":"",
+    "statusName":"",
+    "style":"",
+    "timestamp":resultString,
+    "typeCode":cls,
+    "userName":"",
+    "v":"1.0",
+    "代理机构筛选":"",
+    "商标筛选":"",
+    "标源":0,
+    "检索报告":"1_返回近似数据_10",
+    "申请人地址筛选":"",
+    "申请人筛选":"",
+    "评审文书":0}
+  try {
+
+    // 发送POST请求
+    const response = await axios.post('https://qds.quandashi.com/brandSearch/webBrandSearch', data, {
+      headers: headers
+    });
+     console.log('aaaaaaa',response?.data);
+
+
+    // 返回请求结果
+    res.status(200).json({ data: response?.data?.data?.['检索报告'] });
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
@@ -762,15 +857,16 @@ async function handleGetBHList(req, res) {
     appKey: qdappKey,
     signMethod: "md5",
     executor: qdexecutor,
+    endDate: "2025-07-06",
     firstCgNos: [],
     status: [],
     brandStatusNames: [],
     similarStatusNames: [],
-    appToNow: "2",//1 2可以有效
+    appToNow: "",//1 2可以有效
     brandStatus: [],
     honorList: [],
     sort: 2,
-    timeType: 2,
+    timeType: 1,
     enterprisePatternList: [],
     businessRequireList: [],
     careTypes: [],
