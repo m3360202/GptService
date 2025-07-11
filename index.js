@@ -256,78 +256,85 @@ async function handleGetQDSTrademarkPicList(req, res) {
   const { img_src, cls, modal } = req.body;
 
   const headers = {
-    'Content-Type': 'application/json;charset=utf-8',
-    'User-Agent': '	Apifox/1.0.0 (https://apifox.com)',
-    'Host': 'phoenix.quandashi.com',
+    'Content-Type': 'application/json',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+    // 'Host': 'phoenix.quandashi.com',
+    'client': 'v2',
+    'Origin': 'http://client.qianjianjihua.com',
+    'satoken': '450f412e-fd3a-484d-9de5-3ef7eba38aa9'
   };
   const result = addTimeDifferenceToNumber();
   const resultString = result.toString();
 
   const data = {
-    "v": "1.0",
-    "executor": executor,
-    "sign": resultString,
-    "appKey":  appKey,
-    "partnerId": "1000",
-    "signMethod": "md5",
-    "timestamp": resultString,
-    "userIde": "354665567958674f393843776d796e46387047646f413d3d",
-    "platform": 2,
+    "appKey":  "quandashi6495266219",
+    "category": "",
+    "executor": "2b6f4b434b31397173573767722f397967476f6273673d3d",
     "format": "json",
-    "topN": 50,
+    "imageDataUrl": "brand/2025/07/11/25789153-1fbb-47f2-ba12-278a860b80b9/WX20250711-173000@2x.png",
+    "imageData": img_src,
+    "modalType": 0,
+    
+    "partnerId": "1000",
+    "position": "0,0,250,256",
+    "signMethod": "md5",
+    "status": "",
+    
+    "sign": resultString,
+    "timestamp": resultString,
+    "userIde": "2b6f4b434b31397173573767722f397967476f6273673d3d",
+    "v": "1.0",
+    "topN": 2000,
     "category": cls,
     "year": "",
-    "status": "",
     "法律状态": "",
-    "position": "-2.7190102021753164e-14,0,347,287",
-    "modalType": 1,
-    "检索模型": modal,
+    "检索模型": 0,
     "群组": "",
-    "imageDataUrl": "brand/2025/02/11/d17a713b-632e-45c0-8f81-fb81f6ba46e4/微信图片_20250210183135.png",
-    "imageData": img_src
+
   };
 
   try {
 
     // 发送POST请求
-    const response = await axios.post('https://phoenix.quandashi.com/brandSearch/brandImageSearch', data, {
+    const response = await axios.post('https://phoenix.quandashi.com/brand/brandImageSearch', data, {
       headers: headers
     });
-    // console.log('aaaaaaa',response?.data?.data);
+    console.log('aaaaaaa',response?.data);
 
 
     // 返回请求结果
-    const searchReport = response?.data?.data?.['检索报告'];
+    const searchReport = response?.data?.data;
     
-    if (searchReport && cls) {
-      // 将cls转换为数组（如果不是数组的话）
-      const clsArray = Array.isArray(cls) ? cls : [cls];
+    // if (searchReport && cls) {
+    //   // 将cls转换为数组（如果不是数组的话）
+    //   const clsArray = Array.isArray(cls) ? cls : [cls];
       
-      // 根据cls提取对应的数据
-      const extractedData = [];
-      clsArray.forEach(clsItem => {
-        if (searchReport[clsItem]) {
-          extractedData.push({
-            cls: clsItem,
-            ...searchReport[clsItem]
-          });
-        }
-      });
+    //   // 根据cls提取对应的数据
+    //   const extractedData = [];
+    //   clsArray.forEach(clsItem => {
+    //     if (searchReport[clsItem]) {
+    //       extractedData.push({
+    //         cls: clsItem,
+    //         ...searchReport[clsItem]
+    //       });
+    //     }
+    //   });
       
-      // 整理数据格式
-      const formattedData = extractedData.map(item => ({
-        类别: item.cls,
-        风险等级: item.风险等级,
-        近似总数: item.近似总数,
-        近似数据: item.近似数据 || [],
-        群组风险: item.群组风险 || {}
-      }));
+    //   // 整理数据格式
+    //   const formattedData = extractedData.map(item => ({
+    //     类别: item.cls,
+    //     风险等级: item.风险等级,
+    //     近似总数: item.近似总数,
+    //     近似数据: item.近似数据 || [],
+    //     群组风险: item.群组风险 || {}
+    //   }));
       
-      res.status(200).json({ data: formattedData });
-    } else {
-      // 如果没有cls参数或检索报告为空，返回原始数据
-      res.status(200).json({ data: searchReport });
-    }
+    //   res.status(200).json({ data: formattedData });
+    // } else {
+    //   // 如果没有cls参数或检索报告为空，返回原始数据
+    //   res.status(200).json({ data: searchReport });
+    // }
+    return res.status(200).json({ data: searchReport });
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
@@ -434,7 +441,7 @@ async function handleGetQDSTrademarkMutilList(req, res) {
     'User-Agent': '	Apifox/1.0.0 (https://apifox.com)',
     'Host': 'qds.quandashi.com',
     'Referer': 'https://so.quandashi.com/',
-    'Qdstoken': '283d9128-234c-4610-9b99-55c728d930df'
+    'Qdstoken': '02caa99f-7b91-41d4-9863-13a40f7ea5f5'
 
   };
   const result = addTimeDifferenceToNumber();
