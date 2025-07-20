@@ -439,58 +439,47 @@ async function handleGetQDSTrademarkMutilList(req, res) {
   const headers = {
     'Content-Type': 'application/json',
     'User-Agent': '	Apifox/1.0.0 (https://apifox.com)',
-    'Host': 'qds.quandashi.com',
-    'Referer': 'https://so.quandashi.com/',
-    'Qdstoken': '02caa99f-7b91-41d4-9863-13a40f7ea5f5'
+    'client': 'v2',
+    // 'Host': 'qds.quandashi.com',
+    'Referer': 'http://client.qianjianjihua.com/',
+    'Satoken': '5fb2311e-ffce-4032-b6e5-a815b0da136b'
 
   };
   const result = addTimeDifferenceToNumber();
   const resultString = result.toString();
 
   const data = {
-    "advanceFilter":"",
-    "appKey":"quandashi4380977532",
-    "brandRule":"1",
-    "countryName":"",
-    "createYear":"",
-    "field":"all",
-    "groupFilter":"",
-    "intCls":"",
-    "page":0,
-    "pageSize":20,
-    "param":2,
-    "partnerId":"1000",
-    "platform":1,
-    "q":keywords,
-    "searchKey":"",
-    "serviceGoods":cls,
-    "sign":resultString,
-    "signMethod":"md5",
-    "sort":"",
-    "statusName":"",
-    "style":"",
+    "tab":"all",
+    "identityIde":"2b6f4b434b31397173573767722f397967476f6273673d3d",
+    "h5Query":0,
+    "appKey":"quandashi6495266219",
     "timestamp":resultString,
-    "typeCode":cls,
-    "userName":"",
+    "format":"json",
+    "signMethod":"md5",
+    "executor":"2b6f4b434b31397173573767722f397967476f6273673d3d",
     "v":"1.0",
-    "代理机构筛选":"",
-    "商标筛选":"",
-    "标源":0,
-    "检索报告":"1_返回近似数据_10",
-    "申请人地址筛选":"",
+    "sign":resultString,
+    "isLoading":true,
+    "检索列表":keywords,
+    "群组筛选":"",
+    "过滤无效":0,
+    "pageNo":0,
+    "pageSize":10,
     "申请人筛选":"",
-    "评审文书":0}
+    "数量限制":50,
+    "userId":"2b6f4b434b31397173573767722f397967476f6273673d3d"
+  }
   try {
 
     // 发送POST请求
-    const response = await axios.post('https://qds.quandashi.com/brandSearch/webBrandSearch', data, {
+    const response = await axios.post('https://phoenix.quandashi.com/brand/%E6%89%B9%E9%87%8F%E6%A3%80%E7%B4%A2V2', data, {
       headers: headers
     });
-     console.log('aaaaaaa',response?.data);
+     console.log('aaaaaaa',response?.data?.data?.data);
 
 
     // 返回请求结果
-    res.status(200).json({ data: response?.data?.data?.['检索报告'] });
+    res.status(200).json({ data: response?.data?.data?.data });
   } catch (error) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
