@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { date } from "zod";
+// import pdf from 'pdf-parse';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,7 @@ app.use(cors()); // Enable All CORS Requests
 app.options('*', cors()) // Enable CORS preflight for all routes 测试跨域的时候开启这个地方
 app.use(express.static(path.join(__dirname, 'public')));
 //Ending points
+const qjCookie= '_csrf-frontend=e3da61d6c91075b0f565fcb9723159f775789b2d10e566f191bd702e8ccaf77ba%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-frontend%22%3Bi%3A1%3Bs%3A32%3A%22hTGAWGW1B2Q4LlN0wTIMzYwQMmXx-jGU%22%3B%7D; satoken=4638e4df567022c5d603da0a944e4a715cb511b39e27f03cdd2e732124c0230fa%3A2%3A%7Bi%3A0%3Bs%3A7%3A%22satoken%22%3Bi%3A1%3Bs%3A36%3A%222e7d57b6-5c56-4511-89ee-c0d29d9428e5%22%3B%7D; QDS_AGENT_INFO=bb282291607b0078f8c6d7c70b843bc7d13895ebe6c7799ef6428e8b62c26c06a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_AGENT_INFO%22%3Bi%3A1%3Ba%3A13%3A%7Bs%3A2%3A%22id%22%3Bs%3A48%3A%2236614450474f47762f4f523539695a70394f36644c773d3d%22%3Bs%3A12%3A%22agentOrganId%22%3Bi%3A17172%3Bs%3A8%3A%22realName%22%3Bs%3A41%3A%22%E6%99%BA%E6%85%A7%E6%A0%91%28%E5%8C%97%E4%BA%AC%29%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A5%3A%22phone%22%3Bs%3A11%3A%2217603127960%22%3Bs%3A5%3A%22email%22%3Bs%3A0%3A%22%22%3Bs%3A7%3A%22orgName%22%3Bs%3A41%3A%22%E6%99%BA%E6%85%A7%E6%A0%91%28%E5%8C%97%E4%BA%AC%29%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22roleType%22%3Bi%3A1%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A11%3A%22sourceToken%22%3Bs%3A36%3A%2271fdbeb0-399a-4831-bcc5-71781055d120%22%3Bs%3A7%3A%22satoken%22%3Bs%3A36%3A%222e7d57b6-5c56-4511-89ee-c0d29d9428e5%22%3Bs%3A9%3A%22tokenName%22%3Bs%3A8%3A%22qdsToken%22%3Bs%3A8%3A%22userName%22%3Bs%3A41%3A%22%E6%99%BA%E6%85%A7%E6%A0%91%28%E5%8C%97%E4%BA%AC%29%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3B%7D%7D; QDS_ORGAN_INFO=45db8a1bae142421f7ca12105f5987263663180508fe9934e7a2ef718b554285a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22QDS_ORGAN_INFO%22%3Bi%3A1%3Ba%3A25%3A%7Bs%3A7%3A%22adminId%22%3Bi%3A17172%3Bs%3A13%3A%22adminagencies%22%3Bs%3A41%3A%22%E6%99%BA%E6%85%A7%E6%A0%91%28%E5%8C%97%E4%BA%AC%29%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A13%3A%22admincontacts%22%3Bs%3A0%3A%22%22%3Bs%3A10%3A%22adminPhone%22%3Bs%3A11%3A%2217603127960%22%3Bs%3A13%3A%22principalName%22%3Bs%3A0%3A%22%22%3Bs%3A12%3A%22principalTel%22%3Bs%3A0%3A%22%22%3Bs%3A7%3A%22address%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22isChoose%22%3Bs%3A1%3A%221%22%3Bs%3A21%3A%22domesticRecipientName%22%3Bs%3A0%3A%22%22%3Bs%3A24%3A%22domesticRecipientAddress%22%3Bs%3A0%3A%22%22%3Bs%3A25%3A%22domesticRecipientPostcode%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22agentLogo%22%3Bs%3A0%3A%22%22%3Bs%3A11%3A%22submitEmail%22%3BN%3Bs%3A11%3A%22agentPerson%22%3BN%3Bs%3A13%3A%22exportSetting%22%3Bs%3A14%3A%227%2C10%2C8%2C9%2C12%2C15%22%3Bs%3A15%3A%22agentPersonList%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22userName%22%3Bs%3A41%3A%22%E6%99%BA%E6%85%A7%E6%A0%91%28%E5%8C%97%E4%BA%AC%29%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%22%3Bs%3A15%3A%22adminagenciesEn%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22addressEn%22%3Bs%3A0%3A%22%22%3Bs%3A12%3A%22provinceName%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22cityName%22%3Bs%3A0%3A%22%22%3Bs%3A8%3A%22areaName%22%3Bs%3A0%3A%22%22%3Bs%3A4%3A%22prov%22%3Bi%3A0%3Bs%3A4%3A%22city%22%3Bi%3A0%3Bs%3A4%3A%22area%22%3Bi%3A0%3B%7D%7D'
 
 const cookiePic = '__51vcke__Je2i8VisgdbR8Dl2=d9a5753a-2338-56ef-99f3-e10b89c2a2f7; __51vuft__Je2i8VisgdbR8Dl2=1739180441617; epower_session=WZEPPw0Yrgs0gI5mp36UNxnEuekQFzqvLL4UILVT; epower_session_expires=1740548953; __51uvsct__Je2i8VisgdbR8Dl2=10; __vtins__Je2i8VisgdbR8Dl2=%7B%22sid%22%3A%20%2203b3fe6a-521b-57e5-a866-3192eacf327a%22%2C%20%22vd%22%3A%203%2C%20%22stt%22%3A%2015858%2C%20%22dr%22%3A%2010989%2C%20%22expires%22%3A%201740550769522%2C%20%22ct%22%3A%201740548969522%7D';
 
@@ -632,6 +634,62 @@ async function handleGetqixinPhone(key, page) {
     return null;
   }
 }
+async function handleGetWUXIAOTargetList(req, res) {
+  const { pageNo, pageSize } = req.body;
+
+  const headers = {
+    'Accept': 'application/json, text/plain, */*',
+    'Host': 'phoenix.quandashi.com',
+    'Origin': 'http://www.haixingip.com',
+    'Referer': 'http://www.haixingip.com/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    'client': 'v2',
+    'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+    'Content-Type': 'application/json',
+    'Connection': 'keep-alive'
+  };
+
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+  const data = {
+    appKey: qdappKey,
+    signMethod: "md5",
+    executor: qdexecutor,
+    firstCgNos: [],
+    status: [],
+    brandStatusNames: [],
+    similarStatusNames: [],
+    receiveToNow: "1",//1 2可用
+    brandStatus: [],
+    honorList: [],
+    sort: 2,
+    timeType: 1,
+    enterprisePatternList: [],
+    businessRequireList: [],
+    careTypes: [],
+    type: 10,
+    userId: "706f624f47546a7176496358796e52637636753774513d3d",
+    pageNo: pageNo,
+    pageSize: pageSize,
+    isOnlyNew: true,
+    isFilterConnect: true,
+    timestamp: resultString,
+    sign: resultString,
+    startDate: '2025-07-28',
+    endDate: '2025-08-03'
+  };
+
+  try {
+    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data, { headers: headers });
+
+    // 返回处理后的结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching trademarkList data:', error);
+    res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
 
 
 async function handleGetqjWUXIAOTargetList(req, res) {
@@ -643,7 +701,7 @@ async function handleGetqjWUXIAOTargetList(req, res) {
     'Origin': 'http://client.qianjianjihua.com',
     'Referer': 'http://client.qianjianjihua.com/customer-clue/wxdb',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
-    'Cookie': getDataCookie
+    'Cookie': qjCookie
   };
 
   const data = new URLSearchParams();
@@ -663,6 +721,44 @@ async function handleGetqjWUXIAOTargetList(req, res) {
     // 处理错误
     console.error('Error fetching trademarkList data:', error);
     res.status(500).json({ error: 'Failed to fetch trademark data' });
+  }
+}
+
+async function handleGetExtensionClueList(req, res) {
+  const { pageNo, pageSize, intCls, province, city, regYear, appDate, state, 一级地区, 二级地区, xzDateType } = req.query;
+
+  const headers = {
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Host': 'client.qianjianjihua.com',
+    'Origin': 'http://client.qianjianjihua.com',
+    'Referer': 'http://client.qianjianjihua.com/customer-clue/query-extension-clue-list',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+    'Cookie': qjCookie
+  };
+
+  const params = new URLSearchParams();
+  params.append('pageNo', pageNo || 0);
+  params.append('pageSize', pageSize || 20);
+  if (intCls) params.append('intCls', intCls);
+  if (province) params.append('province', province);
+  if (city) params.append('city', city);
+  if (regYear) params.append('regYear', regYear);
+  if (appDate) params.append('appDate', appDate);
+  if (state) params.append('state', state);
+  if (一级地区) params.append('一级地区', 一级地区);
+  if (二级地区) params.append('二级地区', 二级地区);
+  if (xzDateType) params.append('xzDateType', xzDateType);
+
+  try {
+    const url = `https://client.qianjianjihua.com/customer-clue/query-extension-clue-list?${params.toString()}`;
+    const response = await axios.get(url, { headers: headers });
+
+    // 返回请求结果
+    res.status(200).json(response.data);
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching extension clue list data:', error);
+    res.status(500).json({ error: 'Failed to fetch extension clue list data' });
   }
 }
 
@@ -699,13 +795,14 @@ async function handleGetqianjianCHESANargetList(req, res) {
     'Origin': 'http://client.qianjianjihua.com',
     'Referer': 'http://client.qianjianjihua.com/customer-clue/wxdb',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
-    'Cookie': getDataCookie
+    'Cookie': qjCookie
+
   };
 
   const data = new URLSearchParams();
   data.append('pageNo', pageNo);
   data.append('pageSize', pageSize);
-  data.append('sortField', 'accept_date');
+  data.append('sortField', 'create_time');
   data.append('descAsc', 'desc');
   data.append('isShowTopApplicant', 0);
   data.append('filterExport', 1);
@@ -774,63 +871,7 @@ async function handleGetCHESANargetList(req, res) {
     res.status(500).json({ error: 'Failed to fetch trademark data' });
   }
 }
-async function handleGetWUXIAOTargetList(req, res) {
-  const { pageNo, pageSize } = req.body;
 
-  const headers = {
-    'Accept': 'application/json, text/plain, */*',
-    'Host': 'phoenix.quandashi.com',
-    'Origin': 'http://www.haixingip.com',
-    'Referer': 'http://www.haixingip.com/',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-    'client': 'v2',
-    'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-    'Content-Type': 'application/json',
-    'Connection': 'keep-alive'
-  };
-
-  const result = addTimeDifferenceToNumber();
-  const resultString = result.toString();
-  const data = {
-    appKey: qdappKey,
-    signMethod: "md5",
-    executor: qdexecutor,
-    firstCgNos: [],
-    status: [],
-    brandStatusNames: [],
-    similarStatusNames: [],
-    receiveToNow: "1",//1 2可用
-    brandStatus: [],
-    honorList: [],
-    sort: 2,
-    timeType: 1,
-    enterprisePatternList: [],
-    businessRequireList: [],
-    careTypes: [],
-    type: 10,
-    userId: "706f624f47546a7176496358796e52637636753774513d3d",
-    pageNo: pageNo,
-    pageSize: pageSize,
-    isOnlyNew: true,
-    isFilterConnect: true,
-    timestamp: resultString,
-    sign: resultString
-  };
-
-  // 延迟函数
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  try {
-    const response = await axios.post('https://phoenix.quandashi.com/clue/clueNew/listClueWithClueNew', data, { headers: headers });
-
-    // 返回处理后的结果
-    res.status(200).json(response.data);
-  } catch (error) {
-    // 处理错误
-    console.error('Error fetching trademarkList data:', error);
-    res.status(500).json({ error: 'Failed to fetch trademark data' });
-  }
-}
 
 async function handleGetBHList(req, res) {
   const { pageNo, pageSize } = req.body;
@@ -897,13 +938,13 @@ async function handleGetqjBHList(req, res) {
     'Origin': 'http://client.qianjianjihua.com',
     'Referer': 'http://client.qianjianjihua.com/customer-clue/wxdb',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
-    'Cookie': getDataCookie
+    'Cookie': qjCookie
   };
 
   const data = new URLSearchParams();
   data.append('pageNo', pageNo);
   data.append('pageSize', pageSize);
-  data.append('sortField', 'reject_date');
+  data.append('sortField', 'create_time');
   data.append('descAsc', 'desc');
   data.append('statusName', '驳回待复审');
   data.append('filterExport', 1);
@@ -920,7 +961,55 @@ async function handleGetqjBHList(req, res) {
   }
 }
 
+async function requestMarkDetail(req, res) {
+  const { detailId } = req.body;
+
+  const headers = {
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Client': 'v2',
+    'Connection': 'keep-alive',
+    'Content-Type': 'application/json',
+    'Host': 'phoenix.quandashi.com',
+    'Origin': 'https://client.qianjianjihua.com',
+    'Referer': 'https://client.qianjianjihua.com/',
+    'Satoken': 'undefined'
+  };
+
+  const result = addTimeDifferenceToNumber();
+  const resultString = result.toString();
+
+  const data = {
+    "v": "1.0",
+    "sign": resultString,
+    "appKey": "quandashi6495266219",
+    "partnerId": "1000",
+    "signMethod": "md5",
+    "timestamp": resultString,
+    "detailId": detailId,
+    "source": 1,
+    "isClientDetail": 1
+  };
+
+  try {
+    // 发送POST请求
+    const response = await axios.post('https://phoenix.quandashi.com/brandSearch/brandSearchDetailByDetailId', data, {
+      headers: headers
+    });
+
+    // 返回完整的商标详情数据
+    res.status(200).json({ data: response?.data?.data });
+  } catch (error) {
+    // 处理错误
+    console.error('Error fetching mark detail data:', error);
+    res.status(500).json({ error: 'Failed to fetch mark detail data' });
+  }
+}
+
 app.post("/handleUpdateAddress", handleUpdateAddress);
+
+app.post("/requestMarkDetail", requestMarkDetail);
 
 app.get("/handleGetTrademarkList", handleGetTrademarkList);
 
@@ -936,9 +1025,17 @@ app.post("/handleGetQDSTrademarkMutilList", handleGetQDSTrademarkMutilList);
 
 app.post("/handleGetTargetList", handleGetCHESANargetList);
 
+app.post("/handleGetqianjianCHESANargetList", handleGetqianjianCHESANargetList);
+
 app.post("/handleGetBHList", handleGetBHList);
 
+app.post("/handleGetqjBHList", handleGetqjBHList);
+
 app.post("/handleGetWUXIAOTargetList", handleGetWUXIAOTargetList);
+
+app.post("/handleGetqjWUXIAOTargetList", handleGetqjWUXIAOTargetList);
+
+app.get("/handleGetExtensionClueList", handleGetExtensionClueList);
 
 app.get("/handleGetTrademarkDetail", handleGetTrademarkDetail);
 
@@ -963,7 +1060,360 @@ app.post("/handleGetqixinPhoneTest", async (req, res) => {
   }
 });
 
+// 保存商标数据到文件
+async function saveTrademarkData(req, res) {
+  const { tmName, data, fileType } = req.body;
+  
+  try {
+    // 使用ES模块语法导入fs和path
+    const fs = await import('fs');
+    const path = await import('path');
+    const https = await import('https');
+    const http = await import('http');
+    
+    // 创建目录
+    const resultDir = path.default.join(process.cwd(), '../ming-dashboard/result/无效答辩', tmName);
+    if (!fs.default.existsSync(resultDir)) {
+      fs.default.mkdirSync(resultDir, { recursive: true });
+    }
+    
+    let filePath, content;
+    
+    if (fileType === 'doc') {
+      // 保存商标信息文档
+      filePath = path.default.join(resultDir, '商标信息.txt');
+      content = data;
+      fs.default.writeFileSync(filePath, content, 'utf8');
+    } else if (fileType === 'pdf') {
+      // 下载文件并检测实际类型
+      const url = data.url;
+      const tempFilePath = path.default.join(resultDir, 'temp_download');
+      const fileStream = fs.default.createWriteStream(tempFilePath);
+      
+      const downloadFile = (url) => {
+        return new Promise((resolve, reject) => {
+          const protocol = url.startsWith('https') ? https : http;
+          
+          const requestOptions = {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+              'Accept': 'application/pdf, */*',
+              'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+              'Referer': 'https://client.qianjianjihua.com/',
+              'Connection': 'keep-alive'
+            }
+          };
+          
+          protocol.get(url, requestOptions, (response) => {
+            console.log('PDF下载响应状态码:', response.statusCode);
+            console.log('PDF下载响应头:', response.headers);
+            
+            if (response.statusCode === 200) {
+              // 添加错误处理
+              fileStream.on('error', (err) => {
+                console.error('文件写入错误:', err);
+                reject(err);
+              });
+              
+              response.on('error', (err) => {
+                console.error('响应流错误:', err);
+                reject(err);
+              });
+              
+              response.pipe(fileStream);
+              fileStream.on('finish', () => {
+                fileStream.close();
+                console.log('PDF下载完成:', filePath);
+                resolve(true);
+              });
+            } else {
+              console.error('PDF下载失败，状态码:', response.statusCode);
+              reject(new Error(`下载失败，状态码: ${response.statusCode}`));
+            }
+          }).on('error', (err) => {
+            console.error('PDF下载错误:', err);
+            reject(err);
+          });
+        });
+      };
+      
+      await downloadFile(url);
+      
+      // 验证下载的文件并检测类型
+      if (fs.default.existsSync(tempFilePath)) {
+        const stats = fs.default.statSync(tempFilePath);
+        console.log('下载文件大小:', stats.size, 'bytes');
+        
+        if (stats.size === 0) {
+          throw new Error('下载的文件为空');
+        }
+        
+        // 检测文件类型
+        const buffer = fs.default.readFileSync(tempFilePath, { start: 0, end: 16 });
+        const header = buffer.toString('hex');
+        
+        let actualFileType = 'unknown';
+        let finalFileName = data.fileName;
+        
+        // PDF文件头检测
+        if (header.startsWith('25504446')) { // %PDF
+          actualFileType = 'pdf';
+          if (!finalFileName.toLowerCase().endsWith('.pdf')) {
+            finalFileName = finalFileName.replace(/\.[^.]*$/, '.pdf');
+          }
+        }
+        // JPEG文件头检测
+        else if (header.startsWith('ffd8ff')) { // JPEG
+          actualFileType = 'jpeg';
+          if (!finalFileName.toLowerCase().endsWith('.jpg') && !finalFileName.toLowerCase().endsWith('.jpeg')) {
+            finalFileName = finalFileName.replace(/\.[^.]*$/, '.jpg');
+          }
+        }
+        // PNG文件头检测
+        else if (header.startsWith('89504e47')) { // PNG
+          actualFileType = 'png';
+          if (!finalFileName.toLowerCase().endsWith('.png')) {
+            finalFileName = finalFileName.replace(/\.[^.]*$/, '.png');
+          }
+        }
+        // GIF文件头检测
+        else if (header.startsWith('47494638')) { // GIF
+          actualFileType = 'gif';
+          if (!finalFileName.toLowerCase().endsWith('.gif')) {
+            finalFileName = finalFileName.replace(/\.[^.]*$/, '.gif');
+          }
+        }
+        
+        console.log('检测到的文件类型:', actualFileType);
+        console.log('最终文件名:', finalFileName);
+        
+        // 清理文件名中的非法字符
+        const sanitizedFileName = finalFileName
+          .replace(/[<>:"\\|?*]/g, '_')  // 替换Windows非法字符
+          .replace(/\//g, '_');          // 单独处理斜杠
+        console.log('清理后的文件名:', sanitizedFileName);
+        
+        // 重命名文件到最终位置
+        filePath = path.default.join(resultDir, sanitizedFileName);
+        fs.default.renameSync(tempFilePath, filePath);
+        
+        if (actualFileType === 'unknown') {
+          console.warn('警告: 无法识别文件类型，保持原文件名');
+        }
+      } else {
+        throw new Error('文件下载后不存在');
+      }
+    } else if (fileType === 'image') {
+      // 下载商标图片
+      filePath = path.default.join(resultDir, '商标图片.jpg');
+      
+      // 下载图片
+      const url = data.url;
+      const fileStream = fs.default.createWriteStream(filePath);
+      
+      const downloadFile = (url) => {
+        return new Promise((resolve, reject) => {
+          const protocol = url.startsWith('https') ? https : http;
+          
+          protocol.get(url, (response) => {
+            if (response.statusCode === 200) {
+              response.pipe(fileStream);
+              fileStream.on('finish', () => {
+                fileStream.close();
+                resolve(true);
+              });
+            } else {
+              reject(new Error(`下载失败，状态码: ${response.statusCode}`));
+            }
+          }).on('error', (err) => {
+            reject(err);
+          });
+        });
+      };
+      
+      await downloadFile(url);
+    }
+    
+    res.status(200).json({ 
+      success: true, 
+      message: '文件保存成功',
+      filePath: filePath 
+    });
+  } catch (error) {
+    console.error('保存文件失败:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: '保存文件失败: ' + error.message 
+    });
+  }
+}
+
+// DeepSeek API配置
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'your-deepseek-api-key';
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+// 读取prompt模板
+async function readPromptTemplate() {
+  try {
+    const promptPath = path.join(__dirname, 'prompt.md');
+    return fs.readFileSync(promptPath, 'utf8');
+  } catch (error) {
+    console.error('读取prompt模板失败:', error);
+    throw error;
+  }
+}
+
+// 提取PDF文本内容
+async function extractPdfText(pdfPath) {
+  try {
+    const dataBuffer = fs.readFileSync(pdfPath);
+    const data = await pdf(dataBuffer);
+    return data.text;
+  } catch (error) {
+    console.error('PDF文本提取失败:', error);
+    return '';
+  }
+}
+
+// 获取商标文件夹列表
+async function getTrademarkDirectories(req, res) {
+  try {
+    const resultDir = path.join(process.cwd(), '../ming-dashboard/result/无效答辩');
+    
+    if (!fs.existsSync(resultDir)) {
+      return res.status(404).json({
+        success: false,
+        error: '无效答辩目录不存在'
+      });
+    }
+
+    const directories = fs.readdirSync(resultDir, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    res.status(200).json({
+      success: true,
+      directories: directories
+    });
+
+  } catch (error) {
+    console.error('获取商标文件夹列表失败:', error);
+    res.status(500).json({
+      success: false,
+      error: '获取文件夹列表失败: ' + error.message
+    });
+  }
+}
+
+// 分析商标数据
+async function analyzeTrademarkData(req, res) {
+  const { tmName } = req.body;
+  
+  try {
+    // 构建商标文件夹路径
+    const trademarkDir = path.join(process.cwd(), '../ming-dashboard/result/无效答辩', tmName);
+    
+    if (!fs.existsSync(trademarkDir)) {
+      return res.status(404).json({
+        success: false,
+        error: '商标文件夹不存在'
+      });
+    }
+
+    // 读取商标信息.txt
+    const infoPath = path.join(trademarkDir, '商标信息.txt');
+    let trademarkInfo = '';
+    if (fs.existsSync(infoPath)) {
+      trademarkInfo = fs.readFileSync(infoPath, 'utf8');
+    }
+
+    // 查找并提取PDF文件内容
+    let keyLegalDocumentText = '';
+    const files = fs.readdirSync(trademarkDir);
+    const pdfFiles = files.filter(file => file.toLowerCase().endsWith('.pdf'));
+    
+    if (pdfFiles.length > 0) {
+      // 提取第一个PDF文件的内容
+      const pdfPath = path.join(trademarkDir, pdfFiles[0]);
+      keyLegalDocumentText = await extractPdfText(pdfPath);
+    }
+
+    // 解析商标信息文本
+    const infoLines = trademarkInfo.split('\n').filter(line => line.trim());
+    const infoData = {};
+    
+    infoLines.forEach(line => {
+      const colonIndex = line.indexOf(':');
+      if (colonIndex > 0) {
+        const key = line.substring(0, colonIndex).trim();
+        const value = line.substring(colonIndex + 1).trim();
+        infoData[key] = value;
+      }
+    });
+
+    // 读取prompt模板
+    const promptTemplate = await readPromptTemplate();
+    
+    // 替换prompt模板中的参数
+    let finalPrompt = promptTemplate
+      .replace(/{tmName}/g, infoData['商标名称'] || tmName)
+      .replace(/{intCls}/g, infoData['商标类别'] || '未知')
+      .replace(/{applicantCn}/g, infoData['申请人'] || '未知')
+      .replace(/{address}/g, infoData['地址'] || '未知')
+      .replace(/{appDate}/g, infoData['申请日期'] || '未知')
+      .replace(/{agent}/g, infoData['代理机构'] || '未知')
+      .replace(/{processName}/g, infoData['当前状态'] || '未知')
+      .replace(/{acceptDate}/g, infoData['受理日期'] || '未知')
+      .replace(/{acceptDays}/g, infoData['已过去天数'] || '未知')
+      .replace(/{flowList}/g, infoData['流程列表'] || '无')
+      .replace(/{reviewListSummary}/g, infoData['评审文书'] || '无')
+      .replace(/{keyLegalDocumentText}/g, keyLegalDocumentText || '无');
+
+    // 调用DeepSeek API
+    const response = await axios.post(DEEPSEEK_API_URL, {
+      model: 'deepseek-chat',
+      messages: [
+        {
+          role: 'user',
+          content: finalPrompt + '请注意回复的时候严格按照模板格式，不要添加任何填充语，例如：好的以下是我分析的xxx'
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000
+    }, {
+      headers: {
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const analysisResult = response.data.choices[0].message.content;
+    
+    // 保存分析结果
+    const resultPath = path.join(trademarkDir, '价值分析.txt');
+    fs.writeFileSync(resultPath, analysisResult, 'utf8');
+
+    res.status(200).json({
+      success: true,
+      message: '商标分析完成',
+      resultPath: resultPath,
+      analysisResult: analysisResult
+    });
+
+  } catch (error) {
+    console.error('分析商标数据失败:', error);
+    res.status(500).json({
+      success: false,
+      error: '分析失败: ' + error.message
+    });
+  }
+}
+
 //Functions write here
+
+app.post("/saveTrademarkData", saveTrademarkData);
+app.post("/analyzeTrademarkData", analyzeTrademarkData);
+app.post("/getTrademarkDirectories", getTrademarkDirectories);
 
 app.listen(8080, function () {
   console.log("Server is running on port 8080");
